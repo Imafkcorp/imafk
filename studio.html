@@ -1,1560 +1,1769 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Studio — I’M AFK</title>
-    <link rel="icon" type="image/png" href="icon.png">
-    
-    <!-- PWA / Mobile Web App Meta -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="AFK Studio">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#050807">
-    
-    <!-- Inline Data-URI PWA Manifest -->
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22I%E2%80%99M%20AFK%20Web%20Studio%22%2C%22short_name%22%3A%22AFKStudio%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23050807%22%2C%22theme_color%22%3A%22%2314201C%22%7D">
-
-    <!-- Typography: Inter + Space Grotesk + JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        /* ==========================================================================
-           DESIGN TOKENS — MACOS LIQUID GLASS SYSTEM
-           ========================================================================== */
-        :root {
-            --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
-            --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Space Grotesk", sans-serif;
-            --font-code: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
-
-            --radius-xs: 8px;
-            --radius-sm: 12px;
-            --radius-md: 18px;
-            --radius-lg: 26px;
-            --radius-pill: 9999px;
-
-            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.55);
-            --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
-            --duration-fast: 160ms;
-            --duration-normal: 260ms;
-
-            --nav-height: 54px;
-            --tab-height: 40px;
-            --status-height: 32px;
-            --sidebar-width: 250px;
-        }
-
-        /* ---------------- Theme: Dark ---------------- */
-        [data-theme="dark"] {
-            --bg-canvas: #050807;
-            --bg-surface: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(18, 30, 26, 0.72) 45%, rgba(8, 16, 13, 0.9) 100%);
-            --bg-dock: linear-gradient(180deg, rgba(20, 32, 28, 0.86) 0%, rgba(10, 16, 14, 0.95) 100%);
-            --bg-card: rgba(22, 34, 30, 0.75);
-            --bg-input: rgba(10, 16, 14, 0.85);
-            --bg-hover: rgba(255, 255, 255, 0.06);
-            --bg-active: rgba(56, 225, 166, 0.16);
-
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --glass-border-strong: rgba(56, 225, 166, 0.35);
-            --glass-specular: inset 1.5px 1.5px 1px 0 rgba(255, 255, 255, 0.22), inset -1px -1px 1px 1px rgba(56, 225, 166, 0.12);
-
-            --shadow-subtle: 0 4px 14px -3px rgba(0, 0, 0, 0.5);
-            --shadow-float: 0 16px 36px -8px rgba(0, 0, 0, 0.75);
-            --shadow-lift: 0 24px 48px -12px rgba(0, 0, 0, 0.9), 0 0 24px rgba(56, 225, 166, 0.18);
-
-            --text-primary: #F2F8F5;
-            --text-secondary: #9DB5AC;
-            --text-tertiary: #5D7970;
-            --text-inverse: #050807;
-
-            --accent-brand: #38E1A6;
-            --accent-brand-hover: #5CF0BC;
-            --accent-brand-soft: rgba(56, 225, 166, 0.15);
-            --accent-glow: rgba(56, 225, 166, 0.28);
-
-            --danger: #F87171;
-            --warning: #FBBF24;
-            --success: #34D399;
-
-            --editor-gutter: #080D0B;
-            --editor-selection: rgba(56, 225, 166, 0.25);
-            --preview-bg: #FFFFFF;
-        }
-
-        /* ---------------- Theme: Light ---------------- */
-        [data-theme="light"] {
-            --bg-canvas: #F0F6F3;
-            --bg-surface: linear-gradient(145deg, rgba(255, 255, 255, 0.92) 0%, rgba(240, 248, 244, 0.75) 50%, rgba(230, 242, 236, 0.85) 100%);
-            --bg-dock: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(240, 247, 243, 0.88) 100%);
-            --bg-card: rgba(255, 255, 255, 0.95);
-            --bg-input: #FFFFFF;
-            --bg-hover: rgba(0, 0, 0, 0.04);
-            --bg-active: rgba(23, 107, 82, 0.12);
-
-            --glass-border: rgba(255, 255, 255, 0.9);
-            --glass-border-strong: rgba(23, 107, 82, 0.28);
-            --glass-specular: inset 1.5px 1.5px 1.5px 0 rgba(255, 255, 255, 1), inset -1px -1px 1px 0 rgba(23, 107, 82, 0.08);
-
-            --shadow-subtle: 0 4px 12px -2px rgba(20, 48, 38, 0.06);
-            --shadow-float: 0 16px 36px -6px rgba(20, 48, 38, 0.1);
-            --shadow-lift: 0 24px 48px -10px rgba(18, 44, 35, 0.18), 0 0 20px rgba(23, 107, 82, 0.14);
-
-            --text-primary: #121F1B;
-            --text-secondary: #405B52;
-            --text-tertiary: #759288;
-            --text-inverse: #FFFFFF;
-
-            --accent-brand: #176B52;
-            --accent-brand-hover: #0F4F3C;
-            --accent-brand-soft: rgba(23, 107, 82, 0.12);
-            --accent-glow: rgba(23, 107, 82, 0.22);
-
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --success: #10B981;
-
-            --editor-gutter: #E8F0EC;
-            --editor-selection: rgba(23, 107, 82, 0.18);
-            --preview-bg: #FFFFFF;
-        }
-
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-canvas);
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            font-size: 13px;
-            line-height: 1.5;
-            height: 100vh;
-            height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            user-select: none;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        :focus-visible {
-            outline: 2px solid var(--accent-brand);
-            outline-offset: 2px;
-        }
-
-        /* ==========================================================================
-           1. TOP COMMAND DOCK (macOS & MOBILE RESPONSIVE)
-           ========================================================================== */
-        .navbar-island {
-            height: var(--nav-height);
-            background: var(--bg-dock);
-            backdrop-filter: blur(34px) saturate(210%);
-            -webkit-backdrop-filter: blur(34px) saturate(210%);
-            border-bottom: 1px solid var(--glass-border);
-            box-shadow: var(--glass-specular), var(--shadow-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 14px;
-            flex-shrink: 0;
-            gap: 8px;
-            z-index: 50;
-        }
-
-        .nav-cluster-left,
-        .nav-cluster-center,
-        .nav-cluster-right {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .brand-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            color: var(--text-primary);
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 0.92rem;
-            letter-spacing: -0.01em;
-            padding-right: 10px;
-            border-right: 1px solid var(--glass-border);
-        }
-
-        .brand-gem {
-            width: 26px;
-            height: 26px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--accent-brand), #1E5C4B);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #FFFFFF;
-            box-shadow: 0 2px 8px var(--accent-glow);
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .site-links {
-            display: flex;
-            list-style: none;
-            gap: 2px;
-        }
-
-        .site-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 12.5px;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: var(--radius-pill);
-            transition: all var(--duration-fast) var(--ease-spring);
-        }
-
-        .site-links a:hover {
-            color: var(--text-primary);
-            background: var(--accent-brand-soft);
-        }
-
-        .site-links a.active {
-            color: var(--text-primary);
-            background: var(--bg-active);
-            font-weight: 600;
-        }
-
-        .project-title-input {
-            background: var(--bg-input);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-specular);
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            font-weight: 600;
-            font-size: 13px;
-            padding: 6px 14px;
-            border-radius: var(--radius-pill);
-            width: 130px;
-            outline: none;
-            transition: all var(--duration-fast) var(--ease-spring);
-        }
-
-        .project-title-input:focus {
-            border-color: var(--accent-brand);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-            width: 170px;
-        }
-
-        .save-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11.5px;
-            font-family: var(--font-code);
-            color: var(--text-tertiary);
-            background: var(--bg-surface);
-            padding: 5px 10px;
-            border-radius: var(--radius-pill);
-            border: 1px solid var(--glass-border);
-        }
-
-        .save-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 6px var(--success);
-        }
-
-        .save-pill.unsaved .save-dot {
-            background: var(--warning);
-            box-shadow: 0 0 6px var(--warning);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-specular);
-            color: var(--text-primary);
-            padding: 7px 14px;
-            border-radius: var(--radius-pill);
-            font-family: var(--font-sans);
-            font-size: 12.5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--duration-fast) var(--ease-spring);
-            white-space: nowrap;
-        }
-
-        .btn:active { transform: scale(0.96); }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-brand) 0%, #1D8A68 100%);
-            border-color: transparent;
-            color: #FFFFFF;
-            box-shadow: 0 4px 14px var(--accent-glow);
-        }
-
-        .btn-icon { padding: 7px 10px; border-radius: var(--radius-pill); }
-        .btn-pwa-install { display: none; background: linear-gradient(135deg, #10B981, var(--accent-brand)); color: #050807; font-weight: 700; }
-
-        /* ==========================================================================
-           📱 MOBILE VIEW SWITCHER (Segmented control on phones)
-           ========================================================================== */
-        .mobile-view-tabs {
-            display: none;
-            background: var(--bg-dock);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 6px 12px;
-            justify-content: space-between;
-            gap: 8px;
-            flex-shrink: 0;
-            z-index: 45;
-        }
-
-        .mobile-seg-btn {
-            flex: 1;
-            padding: 7px;
-            border-radius: var(--radius-pill);
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-secondary);
-            font-family: var(--font-sans);
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-
-        .mobile-seg-btn.active {
-            background: var(--bg-card);
-            border-color: var(--glass-border);
-            color: var(--text-primary);
-            box-shadow: var(--glass-specular);
-        }
-
-        /* Mobile Keyboard Code-Accessory Bar */
-        .mobile-code-bar {
-            display: none;
-            background: var(--bg-dock);
-            border-top: 1px solid var(--glass-border);
-            padding: 6px 8px;
-            overflow-x: auto;
-            white-space: nowrap;
-            gap: 6px;
-            flex-shrink: 0;
-            scrollbar-width: none;
-        }
-
-        .mobile-code-bar::-webkit-scrollbar { display: none; }
-
-        .m-key {
-            background: var(--bg-card);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            font-family: var(--font-code);
-            font-weight: 700;
-            font-size: 13px;
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            box-shadow: var(--glass-specular);
-        }
-
-        .m-key:active {
-            background: var(--accent-brand);
-            color: #050807;
-            transform: scale(0.92);
-        }
-
-        /* ==========================================================================
-           2. WORKSPACE LAYOUT (DESKTOP + MOBILE DUAL ENGINE)
-           ========================================================================== */
-        .workspace {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-            position: relative;
-            background: var(--bg-canvas);
-        }
-
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--bg-surface);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            border-right: 1px solid var(--glass-border);
-            box-shadow: var(--glass-specular);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-            transition: width var(--duration-normal) var(--ease-spring);
-            overflow: hidden;
-            z-index: 10;
-        }
-
-        .sidebar.collapsed { width: 0; border-right: none; }
-
-        .sidebar-header {
-            height: var(--tab-height);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 0 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-tertiary);
-        }
-
-        .file-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .file-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 12.5px;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-
-        .file-item.active {
-            background: var(--bg-active);
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .file-item-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .file-icon {
-            font-family: var(--font-code);
-            font-size: 11px;
-            color: var(--text-tertiary);
-            width: 16px;
-        }
-
-        .file-item.active .file-icon { color: var(--accent-brand); }
-
-        .editor-pane {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-canvas);
-            min-width: 200px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .tabs-bar {
-            height: var(--tab-height);
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 8px;
-            overflow-x: auto;
-            flex-shrink: 0;
-            gap: 6px;
-        }
-
-        .tabs-list {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            height: 100%;
-        }
-
-        .tab {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            background: transparent;
-            border: 1px solid transparent;
-            border-radius: var(--radius-pill);
-            color: var(--text-secondary);
-            font-family: var(--font-code);
-            font-size: 11.5px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .tab.active {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border-color: var(--glass-border);
-            box-shadow: var(--glass-specular);
-            font-weight: 600;
-        }
-
-        .tab-close {
-            font-size: 11px;
-            padding: 1px 4px;
-            border-radius: var(--radius-pill);
-            color: var(--text-tertiary);
-        }
-
-        .editor-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-canvas);
-        }
-
-        .gutter {
-            width: 44px;
-            background: var(--editor-gutter);
-            border-right: 1px solid var(--glass-border);
-            padding: 14px 6px;
-            color: var(--text-tertiary);
-            font-family: var(--font-code);
-            font-size: 12px;
-            line-height: 1.6;
-            text-align: right;
-            user-select: none;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .code-textarea {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            padding: 14px;
-            color: var(--text-primary);
-            font-family: var(--font-code);
-            font-size: 13px;
-            line-height: 1.6;
-            resize: none;
-            white-space: pre;
-            tab-size: 2;
-            overflow: auto;
-            caret-color: var(--accent-brand);
-            user-select: text;
-        }
-
-        .pane-divider {
-            width: 5px;
-            background: var(--glass-border);
-            cursor: col-resize;
-            transition: background var(--duration-fast) var(--ease-snappy);
-            z-index: 20;
-            flex-shrink: 0;
-        }
-
-        .preview-pane {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-canvas);
-            min-width: 200px;
-            overflow: hidden;
-        }
-
-        .preview-toolbar {
-            height: var(--tab-height);
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            flex-shrink: 0;
-        }
-
-        .preview-stage {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-canvas);
-            padding: 12px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .preview-viewport {
-            width: 100%;
-            height: 100%;
-            background: var(--preview-bg);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-specular), var(--shadow-float);
-            border-radius: var(--radius-md);
-            position: relative;
-            overflow: hidden;
-        }
-
-        #sandbox-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            background: #FFFFFF;
-        }
-
-        .console-drawer {
-            height: 130px;
-            background: var(--bg-surface);
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            flex-direction: column;
-            flex-shrink: 0;
-        }
-
-        .console-drawer.collapsed { height: var(--status-height); }
-
-        .console-header {
-            height: var(--status-height);
-            background: var(--bg-dock);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            font-size: 11px;
-            font-family: var(--font-code);
-            color: var(--text-secondary);
-        }
-
-        .console-logs {
-            flex: 1;
-            padding: 8px 12px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-family: var(--font-code);
-            font-size: 11.5px;
-            background: var(--bg-canvas);
-            user-select: text;
-        }
-
-        .log-row { display: flex; gap: 8px; word-break: break-all; }
-        .log-row.info { color: var(--text-secondary); }
-        .log-row.warn { color: var(--warning); }
-        .log-row.error { color: var(--danger); }
-        .log-row.system { color: var(--accent-brand); font-weight: 600; }
-        .log-row.repl { color: var(--success); }
-
-        .console-repl {
-            height: 32px;
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            background: var(--bg-dock);
-            padding: 0 12px;
-            gap: 8px;
-        }
-
-        .repl-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text-primary);
-            font-family: var(--font-code);
-            font-size: 11.5px;
-        }
-
-        .statusbar {
-            height: var(--status-height);
-            background: var(--bg-dock);
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            font-size: 11px;
-            font-family: var(--font-code);
-            color: var(--text-tertiary);
-            flex-shrink: 0;
-            z-index: 40;
-        }
-
-        /* Modals & Popups */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(14px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .modal-box {
-            width: 100%;
-            max-width: 500px;
-            background: var(--bg-dock);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-lift);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-        }
-
-        .modal-header {
-            padding: 14px 18px;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-        }
-
-        .modal-body { padding: 18px; max-height: 60vh; overflow-y: auto; }
-        .modal-footer { padding: 12px 18px; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; }
-
-        .project-row {
-            background: var(--bg-card);
-            border: 1px solid var(--glass-border);
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            cursor: pointer;
-        }
-
-        .toast-container {
-            position: fixed;
-            bottom: 40px;
-            right: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            z-index: 2000;
-            pointer-events: none;
-        }
-
-        .toast {
-            background: var(--bg-dock);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-float);
-            color: var(--text-primary);
-            padding: 8px 16px;
-            border-radius: var(--radius-pill);
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* ==========================================================================
-           📱 SMART PHONE (MOBILE) ADAPTATION
-           ========================================================================== */
-        @media (max-width: 768px) {
-            .site-links { display: none; }
-            .save-pill { display: none; }
-            .project-title-input { width: 105px; font-size: 12px; }
-            .pane-divider { display: none; }
-            
-            .mobile-view-tabs { display: flex; }
-            .mobile-code-bar { display: flex; }
-            .preview-toolbar .btn-group { display: none; }
-
-            /* On phone: single active pane logic */
-            .workspace.view-mode-code .editor-pane { display: flex; flex: 1; }
-            .workspace.view-mode-code .preview-pane { display: none; }
-            .workspace.view-mode-code .console-drawer { display: none; }
-
-            .workspace.view-mode-preview .editor-pane { display: none; }
-            .workspace.view-mode-preview .preview-pane { display: flex; flex: 1; }
-            .workspace.view-mode-preview .preview-stage { padding: 0; }
-            .workspace.view-mode-preview .preview-viewport { border-radius: 0; border: none; }
-            .workspace.view-mode-preview .console-drawer { display: none; }
-
-            .workspace.view-mode-console .editor-pane { display: none; }
-            .workspace.view-mode-console .preview-pane { display: flex; flex: 1; }
-            .workspace.view-mode-console .preview-stage { display: none; }
-            .workspace.view-mode-console .console-drawer { display: flex; flex: 1; height: 100%; border-top: none; }
-            
-            .sidebar {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                width: 270px;
-                z-index: 100;
-                box-shadow: var(--shadow-lift);
-            }
-            .sidebar.collapsed { width: 0; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Studio — I'M AFK</title>
+<link rel="icon" type="image/png" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AFK Studio">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0B0D10">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22I%E2%80%99M%20AFK%20Web%20Studio%22%2C%22short_name%22%3A%22AFKStudio%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230B0D10%22%2C%22theme_color%22%3A%22%230B0D10%22%7D">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+
+<style>
+/* ==========================================================================
+   DESIGN TOKENS — minimal, flat, functional
+   ========================================================================== */
+:root{
+  --font-ui: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --dur: 110ms;
+  --ease: cubic-bezier(.2,.6,.3,1);
+  --bar-h: 50px;
+  --tab-h: 36px;
+  --status-h: 26px;
+  --activity-w: 44px;
+  --sidebar-w: 260px;
+}
+[data-theme="dark"]{
+  --bg: #0B0D10;
+  --bg-elevated: #121519;
+  --bg-sunken: #07080A;
+  --bg-hover: #1A1F25;
+  --bg-active: #1E2730;
+  --border: #22272E;
+  --border-strong: #353C45;
+  --text: #E7EAEE;
+  --text-muted: #9AA3AE;
+  --text-faint: #5B636E;
+  --text-inverse: #0B0D10;
+  --accent: #4C9AFF;
+  --accent-hover: #6DAEFF;
+  --accent-soft: rgba(76,154,255,0.14);
+  --danger: #F2555A;
+  --danger-soft: rgba(242,85,90,0.14);
+  --warning: #E7A33E;
+  --warning-soft: rgba(231,163,62,0.14);
+  --success: #3FC97A;
+  --success-soft: rgba(63,201,122,0.14);
+  --shadow: 0 8px 28px -8px rgba(0,0,0,0.55);
+  --cm-bg: #0D1013;
+  --cm-gutter: #0B0D10;
+}
+[data-theme="light"]{
+  --bg: #F7F7F8;
+  --bg-elevated: #FFFFFF;
+  --bg-sunken: #EEEFF1;
+  --bg-hover: #EEF0F2;
+  --bg-active: #E5EDFB;
+  --border: #DEE1E5;
+  --border-strong: #C7CCD2;
+  --text: #15181C;
+  --text-muted: #5B636E;
+  --text-faint: #8A919A;
+  --text-inverse: #FFFFFF;
+  --accent: #2563EB;
+  --accent-hover: #1D4FC4;
+  --accent-soft: rgba(37,99,235,0.1);
+  --danger: #D6373C;
+  --danger-soft: rgba(214,55,60,0.1);
+  --warning: #B4700C;
+  --warning-soft: rgba(180,112,12,0.1);
+  --success: #1C9A55;
+  --success-soft: rgba(28,154,85,0.1);
+  --shadow: 0 8px 24px -10px rgba(20,24,30,0.18);
+  --cm-bg: #FFFFFF;
+  --cm-gutter: #F7F7F8;
+}
+@media (prefers-reduced-motion: reduce){ *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+*,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ background:var(--bg); }
+body{
+  color:var(--text); font-family:var(--font-ui); font-size:13px; line-height:1.5;
+  height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
+}
+button,input,textarea,select{ font-family:inherit; color:inherit; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+::selection{ background:var(--accent-soft); }
+svg{ display:block; flex-shrink:0; }
+.hidden{ display:none !important; }
+
+/* ---------------- Top bar ---------------- */
+.topbar{
+  height:var(--bar-h); background:var(--bg-elevated); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; padding:0 10px; gap:8px; flex-shrink:0; z-index:60;
+}
+.tb-cluster{ display:flex; align-items:center; gap:6px; min-width:0; }
+.brand{ display:flex; align-items:center; gap:7px; text-decoration:none; color:var(--text); font-weight:700; font-size:13px; padding-right:10px; border-right:1px solid var(--border); flex-shrink:0; }
+.brand-mark{ width:24px; height:24px; border-radius:var(--radius-sm); background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; }
+.site-links{ display:flex; list-style:none; gap:2px; }
+.site-links a{ color:var(--text-muted); text-decoration:none; font-size:12px; font-weight:500; padding:6px 10px; border-radius:var(--radius-sm); transition:background var(--dur) var(--ease),color var(--dur) var(--ease); }
+.site-links a:hover{ color:var(--text); background:var(--bg-hover); }
+.site-links a.active{ color:var(--accent); background:var(--accent-soft); font-weight:600; }
+
+.title-input{ background:var(--bg-sunken); border:1px solid var(--border); color:var(--text); font-weight:600; font-size:12.5px; padding:6px 10px; border-radius:var(--radius-sm); width:150px; outline:none; transition:border-color var(--dur) var(--ease),width var(--dur) var(--ease); }
+.title-input:focus{ border-color:var(--accent); width:190px; }
+
+.save-pill{ display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--text-faint); background:var(--bg-sunken); padding:5px 9px; border-radius:var(--radius-sm); border:1px solid var(--border); white-space:nowrap; }
+.save-dot{ width:6px; height:6px; border-radius:50%; background:var(--success); flex-shrink:0; }
+.save-pill.saving .save-dot{ background:var(--warning); }
+.save-pill.error .save-dot{ background:var(--danger); }
+
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text); padding:7px 12px; border-radius:var(--radius-sm); font-size:12px; font-weight:600; cursor:pointer; transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease); white-space:nowrap; }
+.btn:hover{ background:var(--bg-hover); border-color:var(--border-strong); }
+.btn:active{ transform:translateY(1px); }
+.btn-primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn-primary:hover{ background:var(--accent-hover); border-color:var(--accent-hover); }
+.btn-danger{ color:var(--danger); }
+.btn-danger:hover{ background:var(--danger-soft); border-color:var(--danger); }
+.btn-icon{ padding:7px; width:32px; height:32px; }
+.btn-sm{ padding:4px 8px; font-size:11px; }
+
+/* ---------------- Mobile view switcher ---------------- */
+.mobile-view-tabs{ display:none; background:var(--bg-elevated); border-bottom:1px solid var(--border); padding:6px 10px; gap:6px; flex-shrink:0; z-index:45; }
+.mobile-seg{ flex:1; padding:7px; border-radius:var(--radius-sm); background:transparent; border:1px solid var(--border); color:var(--text-muted); font-size:11.5px; font-weight:600; cursor:pointer; }
+.mobile-seg.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+.mobile-icon-bar{ display:none; background:var(--bg-elevated); border-bottom:1px solid var(--border); padding:6px 8px; gap:6px; overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
+.mobile-icon-bar::-webkit-scrollbar{ display:none; }
+.mobile-icon-bar .btn{ flex-shrink:0; }
+
+/* ---------------- Workspace ---------------- */
+.workspace{ flex:1; display:flex; overflow:hidden; background:var(--bg); min-height:0; }
+
+.activity-bar{ width:var(--activity-w); background:var(--bg-elevated); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:8px 0; gap:2px; flex-shrink:0; }
+.act-btn{ position:relative; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:var(--radius-sm); background:transparent; border:none; color:var(--text-faint); cursor:pointer; transition:background var(--dur) var(--ease),color var(--dur) var(--ease); }
+.act-btn:hover{ color:var(--text); background:var(--bg-hover); }
+.act-btn.active{ color:var(--accent); background:var(--accent-soft); }
+.act-badge{ position:absolute; top:2px; right:2px; min-width:14px; height:14px; padding:0 3px; border-radius:7px; background:var(--accent); color:#fff; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.act-spacer{ flex:1; }
+
+.sidebar{ width:var(--sidebar-w); background:var(--bg-elevated); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; transition:width var(--dur) var(--ease); }
+.sidebar.collapsed{ width:0; border-right:none; }
+.sb-header{ height:var(--tab-h); border-bottom:1px solid var(--border); padding:0 10px; display:flex; align-items:center; justify-content:space-between; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); flex-shrink:0; }
+.sb-header .btn-sm{ padding:3px 7px; }
+.sb-body{ flex:1; overflow-y:auto; min-height:0; }
+.sb-panel{ display:none; flex-direction:column; height:100%; }
+.sb-panel.active{ display:flex; }
+
+/* project switcher */
+.proj-switch{ padding:8px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.proj-switch-btn{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:6px; padding:7px 9px; background:var(--bg-sunken); border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; font-size:12px; font-weight:600; text-align:left; }
+.proj-switch-btn:hover{ border-color:var(--border-strong); }
+.proj-switch-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.file-list{ flex:1; overflow-y:auto; padding:6px; display:flex; flex-direction:column; gap:1px; }
+.file-item{ display:flex; align-items:center; justify-content:space-between; padding:6px 8px; border-radius:var(--radius-sm); font-size:12px; color:var(--text-muted); cursor:pointer; gap:6px; }
+.file-item:hover{ background:var(--bg-hover); color:var(--text); }
+.file-item.active{ background:var(--bg-active); color:var(--accent); font-weight:600; }
+.file-item-title{ display:flex; align-items:center; gap:7px; overflow:hidden; min-width:0; }
+.file-item-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.file-badge{ font-family:var(--font-mono); font-size:9px; font-weight:700; color:var(--text-faint); width:20px; text-align:center; border:1px solid var(--border); border-radius:2px; padding:1px 0; flex-shrink:0; }
+.file-item.active .file-badge{ color:var(--accent); border-color:var(--accent); }
+.file-actions{ display:none; gap:2px; flex-shrink:0; }
+.file-item:hover .file-actions{ display:flex; }
+.file-dot{ width:5px; height:5px; border-radius:50%; background:var(--warning); flex-shrink:0; }
+.sb-footer{ padding:8px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:6px; flex-shrink:0; }
+
+.search-box{ padding:8px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.search-input{ width:100%; background:var(--bg-sunken); border:1px solid var(--border); color:var(--text); padding:7px 9px; border-radius:var(--radius-sm); font-size:12px; outline:none; }
+.search-input:focus{ border-color:var(--accent); }
+.search-results{ flex:1; overflow-y:auto; padding:4px; }
+.search-hit{ padding:7px 8px; border-radius:var(--radius-sm); cursor:pointer; margin-bottom:2px; }
+.search-hit:hover{ background:var(--bg-hover); }
+.search-hit-file{ font-size:11px; font-weight:700; color:var(--accent); margin-bottom:2px; }
+.search-hit-line{ font-family:var(--font-mono); font-size:11px; color:var(--text-muted); white-space:pre; overflow:hidden; text-overflow:ellipsis; }
+.search-hit-line mark{ background:var(--warning-soft); color:var(--warning); border-radius:2px; }
+.empty-hint{ padding:20px 14px; font-size:12px; color:var(--text-faint); text-align:center; }
+
+.task-add{ padding:8px; border-bottom:1px solid var(--border); display:flex; gap:6px; flex-shrink:0; }
+.task-add input{ flex:1; background:var(--bg-sunken); border:1px solid var(--border); color:var(--text); padding:7px 9px; border-radius:var(--radius-sm); font-size:12px; outline:none; }
+.task-add input:focus{ border-color:var(--accent); }
+.task-list{ flex:1; overflow-y:auto; padding:6px; }
+.task-item{ display:flex; align-items:flex-start; gap:8px; padding:7px 8px; border-radius:var(--radius-sm); }
+.task-item:hover{ background:var(--bg-hover); }
+.task-check{ width:15px; height:15px; border:1.5px solid var(--border-strong); border-radius:3px; flex-shrink:0; margin-top:1px; cursor:pointer; display:flex; align-items:center; justify-content:center; background:var(--bg-sunken); }
+.task-check.done{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.task-text{ flex:1; font-size:12px; word-break:break-word; cursor:pointer; }
+.task-item.done .task-text{ color:var(--text-faint); text-decoration:line-through; }
+.task-del{ color:var(--text-faint); cursor:pointer; font-size:14px; padding:0 2px; flex-shrink:0; }
+.task-del:hover{ color:var(--danger); }
+.task-progress{ padding:8px 10px; border-top:1px solid var(--border); font-size:11px; color:var(--text-faint); flex-shrink:0; }
+
+.snap-list{ flex:1; overflow-y:auto; padding:6px; }
+.snap-item{ padding:8px 9px; border-radius:var(--radius-sm); margin-bottom:3px; border:1px solid var(--border); }
+.snap-item-top{ display:flex; justify-content:space-between; align-items:center; gap:6px; }
+.snap-label{ font-size:12px; font-weight:600; }
+.snap-time{ font-size:10.5px; color:var(--text-faint); margin-top:2px; }
+.snap-actions{ display:flex; gap:4px; margin-top:6px; }
+.snap-auto-badge{ font-size:9px; font-weight:700; text-transform:uppercase; color:var(--text-faint); border:1px solid var(--border); border-radius:2px; padding:1px 4px; }
+
+.util-tabs{ display:flex; border-bottom:1px solid var(--border); flex-shrink:0; }
+.util-tab{ flex:1; padding:8px 4px; text-align:center; font-size:11px; font-weight:600; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; }
+.util-tab.active{ color:var(--accent); border-color:var(--accent); }
+.util-body{ flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:8px; }
+.util-pane{ display:none; flex-direction:column; gap:8px; }
+.util-pane.active{ display:flex; }
+.util-ta{ width:100%; min-height:90px; background:var(--bg-sunken); border:1px solid var(--border); color:var(--text); padding:8px; border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:11.5px; resize:vertical; outline:none; }
+.util-ta:focus{ border-color:var(--accent); }
+.util-row{ display:flex; gap:6px; flex-wrap:wrap; }
+.util-err{ font-size:11px; color:var(--danger); background:var(--danger-soft); padding:6px 8px; border-radius:var(--radius-sm); display:none; }
+.util-err.show{ display:block; }
+.util-label{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); }
+.util-input{ width:100%; background:var(--bg-sunken); border:1px solid var(--border); color:var(--text); padding:7px 9px; border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:12px; outline:none; }
+.util-input:focus{ border-color:var(--accent); }
+
+/* ---------------- Editor ---------------- */
+.editor-col{ flex:1; display:flex; flex-direction:column; min-width:160px; overflow:hidden; position:relative; }
+.tabs-bar{ height:var(--tab-h); background:var(--bg-elevated); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 6px; overflow-x:auto; flex-shrink:0; gap:6px; }
+.tabs-bar::-webkit-scrollbar{ height:3px; }
+.tabs-list{ display:flex; align-items:center; gap:2px; height:100%; }
+.tab{ display:flex; align-items:center; gap:7px; padding:0 10px; height:28px; background:transparent; border:1px solid transparent; border-radius:var(--radius-sm); color:var(--text-muted); font-family:var(--font-mono); font-size:11.5px; cursor:pointer; white-space:nowrap; }
+.tab:hover{ background:var(--bg-hover); }
+.tab.active{ background:var(--bg-active); color:var(--text); border-color:var(--border); }
+.tab-close{ font-size:13px; color:var(--text-faint); padding:0 2px; border-radius:2px; line-height:1; }
+.tab-close:hover{ color:var(--danger); }
+.tab-dot{ width:5px; height:5px; border-radius:50%; background:var(--warning); }
+.editor-container{ flex:1; position:relative; overflow:hidden; background:var(--cm-bg); }
+.CodeMirror{ height:100%; font-family:var(--font-mono); background:var(--cm-bg); color:var(--text); }
+.CodeMirror-gutters{ background:var(--cm-gutter); border-right:1px solid var(--border); }
+.CodeMirror-linenumber{ color:var(--text-faint); }
+.CodeMirror-cursor{ border-left:2px solid var(--accent); }
+.cm-s-afk .cm-keyword{ color:#C792EA; } .cm-s-afk .cm-atom{ color:#F78C6C; } .cm-s-afk .cm-number{ color:#F78C6C; }
+.cm-s-afk .cm-def{ color:#82AAFF; } .cm-s-afk .cm-variable{ color:var(--text); } .cm-s-afk .cm-variable-2{ color:#82AAFF; }
+.cm-s-afk .cm-property{ color:#82AAFF; } .cm-s-afk .cm-string{ color:#C3E88D; } .cm-s-afk .cm-string-2{ color:#C3E88D; }
+.cm-s-afk .cm-comment{ color:var(--text-faint); font-style:italic; } .cm-s-afk .cm-tag{ color:#F07178; }
+.cm-s-afk .cm-attribute{ color:#C792EA; } .cm-s-afk .cm-meta{ color:var(--text-faint); }
+[data-theme="light"] .cm-s-afk .cm-keyword{ color:#9333EA; } [data-theme="light"] .cm-s-afk .cm-atom,[data-theme="light"] .cm-s-afk .cm-number{ color:#C2410C; }
+[data-theme="light"] .cm-s-afk .cm-def,[data-theme="light"] .cm-s-afk .cm-variable-2,[data-theme="light"] .cm-s-afk .cm-property{ color:#1D4ED8; }
+[data-theme="light"] .cm-s-afk .cm-string,[data-theme="light"] .cm-s-afk .cm-string-2{ color:#15803D; }
+[data-theme="light"] .cm-s-afk .cm-tag{ color:#BE123C; } [data-theme="light"] .cm-s-afk .cm-attribute{ color:#9333EA; }
+.CodeMirror-activeline-background{ background:var(--bg-hover); }
+.CodeMirror-matchingbracket{ color:var(--accent) !important; font-weight:700; }
+
+.find-bar{ position:absolute; top:8px; right:8px; z-index:30; background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:var(--radius-sm); box-shadow:var(--shadow); display:none; align-items:center; gap:4px; padding:5px; }
+.find-bar.show{ display:flex; }
+.find-bar input{ background:var(--bg-sunken); border:1px solid var(--border); color:var(--text); padding:5px 7px; border-radius:3px; font-size:12px; width:150px; outline:none; }
+.find-bar input:focus{ border-color:var(--accent); }
+.find-count{ font-size:10.5px; color:var(--text-faint); padding:0 4px; white-space:nowrap; }
+
+.pane-divider{ width:4px; background:var(--border); cursor:col-resize; flex-shrink:0; }
+.pane-divider:hover{ background:var(--accent); }
+
+.preview-col{ flex:1; display:flex; flex-direction:column; min-width:160px; overflow:hidden; }
+.preview-toolbar{ height:var(--tab-h); background:var(--bg-elevated); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 8px; flex-shrink:0; gap:6px; }
+.seg-group{ display:flex; gap:2px; background:var(--bg-sunken); border:1px solid var(--border); border-radius:var(--radius-sm); padding:2px; }
+.seg-group .btn{ background:transparent; border:none; padding:4px 8px; font-size:11px; }
+.seg-group .btn.active{ background:var(--bg-elevated); box-shadow:0 1px 2px rgba(0,0,0,0.15); }
+.preview-stage{ flex:1; display:flex; align-items:center; justify-content:center; background:var(--bg-sunken); padding:10px; overflow:hidden; position:relative; }
+.preview-viewport{ width:100%; height:100%; background:#fff; border:1px solid var(--border); border-radius:var(--radius-md); position:relative; overflow:hidden; }
+#sandbox-frame{ width:100%; height:100%; border:none; display:block; background:#fff; }
+
+.console-drawer{ height:150px; background:var(--bg-elevated); border-top:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
+.console-drawer.collapsed{ height:var(--status-h); }
+.console-header{ height:var(--status-h); background:var(--bg-elevated); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 10px; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); cursor:pointer; flex-shrink:0; }
+.console-logs{ flex:1; padding:6px 10px; overflow-y:auto; display:flex; flex-direction:column; gap:3px; font-family:var(--font-mono); font-size:11.5px; background:var(--bg-sunken); user-select:text; }
+.log-row{ display:flex; gap:7px; word-break:break-all; }
+.log-row .lt{ flex-shrink:0; opacity:.5; font-size:10px; margin-top:2px; }
+.log-row.info{ color:var(--text-muted); } .log-row.warn{ color:var(--warning); } .log-row.error{ color:var(--danger); }
+.log-row.system{ color:var(--accent); font-weight:600; } .log-row.repl{ color:var(--success); }
+.console-repl{ height:30px; border-top:1px solid var(--border); display:flex; align-items:center; background:var(--bg-elevated); padding:0 10px; gap:7px; flex-shrink:0; }
+.console-repl input{ flex:1; background:transparent; border:none; outline:none; color:var(--text); font-family:var(--font-mono); font-size:11.5px; }
+
+.statusbar{ height:var(--status-h); background:var(--bg-elevated); border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 10px; font-size:10.5px; color:var(--text-faint); flex-shrink:0; z-index:40; gap:10px; }
+.statusbar-item{ display:flex; align-items:center; gap:10px; overflow:hidden; }
+.statusbar span{ white-space:nowrap; }
+
+/* ---------------- Modals ---------------- */
+.modal-overlay{ display:none; position:fixed; inset:0; background:rgba(5,6,8,0.55); z-index:1000; align-items:flex-start; justify-content:center; padding:10vh 16px 16px; overflow-y:auto; }
+.modal-overlay.active{ display:flex; }
+.modal-box{ width:100%; max-width:520px; background:var(--bg-elevated); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:var(--radius-md); overflow:hidden; }
+.modal-header{ padding:13px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-weight:700; font-size:13px; }
+.modal-body{ padding:16px; max-height:65vh; overflow-y:auto; display:flex; flex-direction:column; gap:14px; }
+.modal-footer{ padding:12px 16px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+.settings-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.settings-row-label{ font-size:12.5px; font-weight:600; }
+.settings-row-hint{ font-size:11px; color:var(--text-faint); margin-top:1px; }
+.settings-group-title{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); padding-top:4px; border-top:1px solid var(--border); padding-bottom:2px; }
+.settings-group-title:first-child{ border-top:none; padding-top:0; }
+select.util-input{ cursor:pointer; }
+.switch{ position:relative; width:36px; height:20px; flex-shrink:0; cursor:pointer; }
+.switch input{ opacity:0; width:0; height:0; }
+.switch-track{ position:absolute; inset:0; background:var(--border-strong); border-radius:10px; transition:background var(--dur) var(--ease); }
+.switch input:checked + .switch-track{ background:var(--accent); }
+.switch-thumb{ position:absolute; top:2px; left:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform var(--dur) var(--ease); }
+.switch input:checked ~ .switch-thumb{ transform:translateX(16px); }
+.range-row{ display:flex; align-items:center; gap:8px; }
+.range-row input[type=range]{ flex:1; }
+.range-val{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-muted); width:40px; text-align:right; flex-shrink:0; }
+.proj-row{ background:var(--bg-sunken); border:1px solid var(--border); padding:10px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; gap:8px; }
+.proj-row:hover{ border-color:var(--border-strong); }
+.proj-row-name{ font-weight:600; font-size:12.5px; cursor:pointer; }
+.proj-row-meta{ font-size:10.5px; color:var(--text-faint); margin-top:2px; }
+.proj-row-actions{ display:flex; gap:4px; flex-shrink:0; }
+.kbd{ font-family:var(--font-mono); font-size:10.5px; background:var(--bg-sunken); border:1px solid var(--border); border-bottom-width:2px; border-radius:3px; padding:1px 5px; }
+.shortcut-row{ display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-size:12px; }
+
+/* command palette */
+.cp-overlay{ display:none; position:fixed; inset:0; background:rgba(5,6,8,0.5); z-index:1100; align-items:flex-start; justify-content:center; padding-top:12vh; }
+.cp-overlay.active{ display:flex; }
+.cp-box{ width:100%; max-width:480px; background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:var(--radius-md); box-shadow:var(--shadow); overflow:hidden; margin:0 16px; }
+.cp-input{ width:100%; border:none; outline:none; background:transparent; padding:14px 16px; font-size:14px; color:var(--text); border-bottom:1px solid var(--border); }
+.cp-list{ max-height:50vh; overflow-y:auto; padding:6px; }
+.cp-item{ display:flex; justify-content:space-between; align-items:center; padding:9px 10px; border-radius:var(--radius-sm); cursor:pointer; font-size:12.5px; gap:10px; }
+.cp-item.sel{ background:var(--accent-soft); color:var(--accent); }
+.cp-item-hint{ font-size:10.5px; color:var(--text-faint); flex-shrink:0; }
+.cp-item.sel .cp-item-hint{ color:var(--accent); opacity:.8; }
+
+/* toasts */
+.toast-container{ position:fixed; bottom:16px; right:16px; display:flex; flex-direction:column-reverse; gap:7px; z-index:2000; max-width:320px; }
+.toast{ background:var(--bg-elevated); border:1px solid var(--border); border-left:3px solid var(--accent); box-shadow:var(--shadow); color:var(--text); padding:9px 11px; border-radius:var(--radius-sm); font-size:12px; display:flex; align-items:flex-start; gap:8px; animation:toast-in var(--dur) var(--ease); }
+.toast.success{ border-left-color:var(--success); } .toast.warning{ border-left-color:var(--warning); } .toast.error{ border-left-color:var(--danger); }
+.toast-msg{ flex:1; }
+.toast-close{ color:var(--text-faint); cursor:pointer; flex-shrink:0; }
+.toast-close:hover{ color:var(--text); }
+@keyframes toast-in{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+
+/* ---------------- Mobile ---------------- */
+@media (max-width:768px){
+  .site-links{ display:none; }
+  .save-pill{ display:none; }
+  .title-input{ width:96px; font-size:11.5px; }
+  .activity-bar{ display:none; }
+  .pane-divider{ display:none; }
+  .mobile-view-tabs{ display:flex; }
+  .mobile-icon-bar{ display:flex; }
+  .preview-toolbar .seg-group{ display:none; }
+  .sidebar{ position:absolute; top:0; bottom:0; left:0; width:280px; z-index:100; box-shadow:var(--shadow); }
+  .sidebar.collapsed{ width:0; }
+  .workspace.view-code .editor-col{ display:flex; flex:1; }
+  .workspace.view-code .preview-col{ display:none; }
+  .workspace.view-preview .editor-col{ display:none; }
+  .workspace.view-preview .preview-col{ display:flex; flex:1; }
+  .workspace.view-preview .preview-stage{ padding:0; }
+  .workspace.view-preview .preview-viewport{ border-radius:0; border:none; }
+  .workspace.view-preview .console-drawer{ display:none; }
+  .workspace.view-console .editor-col{ display:none; }
+  .workspace.view-console .preview-col{ display:flex; flex:1; }
+  .workspace.view-console .preview-stage{ display:none; }
+  .workspace.view-console .console-drawer{ display:flex; flex:1; height:100%; border-top:none; }
+}
+</style>
 </head>
 <body>
 
-    <!-- 1. TOP COMMAND BAR -->
-    <header class="navbar-island">
-        <div class="nav-cluster-left">
-            <a href="index.html" class="brand-link" title="I’M AFK Hub">
-                <div class="brand-gem" aria-hidden="true">★</div>
-                <span>I’M AFK</span>
-            </a>
+<header class="topbar">
+  <div class="tb-cluster" style="min-width:0;">
+    <a href="index.html" class="brand" title="I'M AFK Hub">
+      <div class="brand-mark" aria-hidden="true">A</div>
+      <span>I'M AFK</span>
+    </a>
+    <ul class="site-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="library.html">Library</a></li>
+      <li><a href="studio.html" class="active">Studio</a></li>
+      <li><a href="submit.html">Submit</a></li>
+      <li><a href="contact.html">Support</a></li>
+    </ul>
+  </div>
+  <div class="tb-cluster">
+    <input type="text" id="project-title-input" class="title-input" value="" spellcheck="false" title="Rename project" aria-label="Project name">
+    <div class="save-pill" id="save-tag"><div class="save-dot" aria-hidden="true"></div><span id="save-status-text">Saved</span></div>
+    <button class="btn btn-primary" id="run-btn" title="Run (Ctrl+Enter)">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg><span>Run</span>
+    </button>
+  </div>
+  <div class="tb-cluster">
+    <button class="btn btn-icon" id="palette-btn" title="Command palette (Ctrl+K)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M7 9l3 3-3 3M13 15h4"></path></svg>
+    </button>
+    <button class="btn btn-icon" id="settings-btn" title="Settings">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>
+    </button>
+    <button class="btn btn-icon" id="theme-btn" title="Toggle theme">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
+    </button>
+  </div>
+</header>
 
-            <ul class="site-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="library.html">Library</a></li>
-                <li><a href="studio.html" class="active">Studio</a></li>
-                <li><a href="submit.html">Submit</a></li>
-                <li><a href="contact.html">Support</a></li>
-            </ul>
-        </div>
+<div class="mobile-view-tabs" id="mobile-tabs">
+  <button class="mobile-seg active" id="m-tab-code" data-mode="code">Code</button>
+  <button class="mobile-seg" id="m-tab-preview" data-mode="preview">Preview</button>
+  <button class="mobile-seg" id="m-tab-console" data-mode="console">Console</button>
+</div>
+<div class="mobile-icon-bar">
+  <button class="btn btn-sm" id="m-files-btn">📁 Files</button>
+  <button class="btn btn-sm" id="m-palette-btn">⌘ Commands</button>
+  <button class="btn btn-sm" id="m-settings-btn">⚙ Settings</button>
+</div>
 
-        <div class="nav-cluster-center">
-            <input type="text" id="project-title-input" class="project-title-input" value="Web Project" spellcheck="false" title="Click to rename" aria-label="Project Title">
-            
-            <div class="save-pill" id="save-tag">
-                <div class="save-dot" aria-hidden="true"></div>
-                <span id="save-status-text">Saved</span>
-            </div>
+<div class="workspace view-code" id="workspace">
 
-            <!-- Run Button (Works on both Phone & PC) -->
-            <button class="btn btn-primary" onclick="runSandbox()" title="Run Code">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                <span>Run</span>
-            </button>
-        </div>
+  <nav class="activity-bar" id="activity-bar">
+    <button class="act-btn active" data-panel="files" title="Files">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"></path></svg>
+    </button>
+    <button class="act-btn" data-panel="search" title="Project search (Ctrl+Shift+F)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </button>
+    <button class="act-btn" data-panel="tasks" title="Tasks">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg>
+      <span class="act-badge hidden" id="task-badge">0</span>
+    </button>
+    <button class="act-btn" data-panel="snapshots" title="Snapshots">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14.5"></polyline></svg>
+    </button>
+    <button class="act-btn" data-panel="utils" title="Utilities">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 01-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 015.4-5.4L21 6l-3-3-3.3 3.3z"></path></svg>
+    </button>
+    <div class="act-spacer"></div>
+  </nav>
 
-        <div class="nav-cluster-right">
-            <!-- PWA Install Button (Appears on PC & Phones supporting PWA) -->
-            <button class="btn btn-pwa-install" id="pwa-install-btn" onclick="installPWA()">
-                <span>📲 Install</span>
-            </button>
-
-            <button class="btn" onclick="openProjectsModal()" title="Projects">
-                <span>Projects</span>
-            </button>
-
-            <!-- Theme Toggle -->
-            <button class="btn btn-icon" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme">
-                <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
-            </button>
-        </div>
-    </header>
-
-    <!-- 📱 PHONE VIEWPORT SEGMENTED SWITCHER (Shown on Mobile) -->
-    <div class="mobile-view-tabs" id="mobile-tabs">
-        <button class="mobile-seg-btn active" id="m-tab-code" onclick="setMobileTab('code')">
-            <span>📝 Code</span>
+  <aside class="sidebar" id="sidebar">
+    <!-- FILES -->
+    <section class="sb-panel active" id="panel-files">
+      <div class="proj-switch">
+        <button class="proj-switch-btn" id="proj-switch-btn">
+          <span class="proj-switch-name" id="proj-switch-name">Project</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
-        <button class="mobile-seg-btn" id="m-tab-preview" onclick="setMobileTab('preview')">
-            <span>👁️ Preview</span>
+      </div>
+      <div class="sb-header"><span>Files</span><button class="btn btn-sm" id="new-file-btn">+ New</button></div>
+      <div class="file-list" id="file-list-container"></div>
+      <div class="sb-footer">
+        <button class="btn btn-sm" id="import-btn">⤓ Import file</button>
+        <button class="btn btn-sm" id="export-zip-btn">⤒ Export project (.zip)</button>
+        <button class="btn btn-sm" id="export-html-btn">⤒ Export bundled .html</button>
+      </div>
+    </section>
+    <!-- SEARCH -->
+    <section class="sb-panel" id="panel-search">
+      <div class="search-box"><input type="text" class="search-input" id="search-input" placeholder="Search in project files…"></div>
+      <div class="search-results" id="search-results"><div class="empty-hint">Type to search across every file in this project.</div></div>
+    </section>
+    <!-- TASKS -->
+    <section class="sb-panel" id="panel-tasks">
+      <div class="task-add"><input type="text" id="task-input" placeholder="Add a task…"><button class="btn btn-sm" id="task-add-btn">Add</button></div>
+      <div class="task-list" id="task-list"><div class="empty-hint">No tasks yet. Keep track of what's left to build.</div></div>
+      <div class="task-progress" id="task-progress"></div>
+    </section>
+    <!-- SNAPSHOTS -->
+    <section class="sb-panel" id="panel-snapshots">
+      <div class="sb-header"><span>Snapshots</span><button class="btn btn-sm" id="take-snapshot-btn">+ Take</button></div>
+      <div class="snap-list" id="snap-list"><div class="empty-hint">No snapshots yet. Take one before a big change — auto-snapshots happen in the background too.</div></div>
+    </section>
+    <!-- UTILITIES -->
+    <section class="sb-panel" id="panel-utils">
+      <div class="util-tabs">
+        <div class="util-tab active" data-util="json">JSON</div>
+        <div class="util-tab" data-util="b64">Base64</div>
+        <div class="util-tab" data-util="time">Time</div>
+      </div>
+      <div class="util-body">
+        <div class="util-pane active" id="util-json">
+          <textarea class="util-ta" id="json-input" placeholder="Paste JSON here…"></textarea>
+          <div class="util-row"><button class="btn btn-sm" id="json-format">Format</button><button class="btn btn-sm" id="json-minify">Minify</button><button class="btn btn-sm" id="json-copy">Copy</button></div>
+          <div class="util-err" id="json-err"></div>
+        </div>
+        <div class="util-pane" id="util-b64">
+          <textarea class="util-ta" id="b64-input" placeholder="Text or Base64…"></textarea>
+          <div class="util-row"><button class="btn btn-sm" id="b64-encode">Encode</button><button class="btn btn-sm" id="b64-decode">Decode</button><button class="btn btn-sm" id="b64-copy">Copy</button></div>
+          <div class="util-err" id="b64-err"></div>
+        </div>
+        <div class="util-pane" id="util-time">
+          <div class="util-label">Unix timestamp (seconds)</div>
+          <div class="util-row"><input type="text" class="util-input" id="time-unix" placeholder="1700000000" style="flex:1;"><button class="btn btn-sm" id="time-now">Now</button></div>
+          <div class="util-label">Local / ISO</div>
+          <div id="time-out" style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-muted); word-break:break-word; white-space:pre-line;">—</div>
+          <div class="util-row"><button class="btn btn-sm" id="time-copy">Copy ISO</button></div>
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <section class="editor-col" id="editor-col">
+    <div class="tabs-bar">
+      <div class="tabs-list" id="tabs-container"></div>
+      <div style="display:flex; gap:4px; flex-shrink:0;">
+        <button class="btn btn-icon" id="toggle-sidebar-btn" title="Toggle sidebar (Ctrl+B)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><line x1="9" y1="4" x2="9" y2="20"></line></svg>
         </button>
-        <button class="mobile-seg-btn" id="m-tab-console" onclick="setMobileTab('console')">
-            <span>📟 Console</span>
+        <button class="btn btn-icon" id="find-btn" title="Find (Ctrl+F)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </button>
+      </div>
     </div>
-
-    <!-- 2. MAIN WORKSPACE (Phone + Desktop Dual Engine) -->
-    <div class="workspace view-mode-code" id="workspace-container">
-        
-        <!-- Sidebar: Files Drawer -->
-        <aside class="sidebar collapsed" id="sidebar">
-            <div class="sidebar-header">
-                <span>Project Files</span>
-                <div>
-                    <button class="btn" style="padding: 3px 8px; font-size:11px;" onclick="promptNewFile()">+ File</button>
-                    <button class="btn" style="padding: 3px 8px; font-size:11px;" onclick="toggleSidebar()">✕</button>
-                </div>
-            </div>
-            <div class="file-list" id="file-list-container"></div>
-            <div style="padding: 10px; border-top: 1px solid var(--glass-border); display: flex; flex-direction: column; gap: 6px;">
-                <button class="btn" style="width: 100%; font-size: 11.5px;" onclick="exportStandaloneHTML()">📥 Export .HTML</button>
-                <button class="btn" style="width: 100%; font-size: 11.5px;" onclick="takeSnapshot()">💾 Take Snapshot</button>
-            </div>
-        </aside>
-
-        <!-- Editor Pane -->
-        <section class="editor-pane" id="editor-pane">
-            <div class="tabs-bar">
-                <div class="tabs-list" id="tabs-container"></div>
-                <div style="display:flex; gap:4px;">
-                    <button class="btn btn-icon" onclick="toggleSidebar()" title="Toggle Files">📁</button>
-                    <button class="btn btn-icon" onclick="formatActiveFile()" title="Format Code">✨</button>
-                </div>
-            </div>
-
-            <div class="editor-container">
-                <div class="gutter" id="gutter">1</div>
-                <textarea id="code-textarea" class="code-textarea" spellcheck="false" placeholder="Type HTML, CSS, or JS here..."></textarea>
-            </div>
-
-            <!-- 📱 PHONE CODING ACCESSORY KEYS (Super fast mobile typing) -->
-            <div class="mobile-code-bar">
-                <button class="m-key" onclick="insertKey('<')">&lt;</button>
-                <button class="m-key" onclick="insertKey('>')">&gt;</button>
-                <button class="m-key" onclick="insertKey('/')">/</button>
-                <button class="m-key" onclick="insertKey('=')">=</button>
-                <button class="m-key" onclick="insertKey('&quot;')">&quot;</button>
-                <button class="m-key" onclick="insertKey('\'')">&apos;</button>
-                <button class="m-key" onclick="insertKey('{')">{</button>
-                <button class="m-key" onclick="insertKey('}')">}</button>
-                <button class="m-key" onclick="insertKey('(')">(</button>
-                <button class="m-key" onclick="insertKey(')')">)</button>
-                <button class="m-key" onclick="insertKey(';')">;</button>
-                <button class="m-key" onclick="insertKey(':')">:</button>
-                <button class="m-key" onclick="insertKey('.')">.</button>
-            </div>
-        </section>
-
-        <!-- Resizable Split Divider (Active on Desktop) -->
-        <div class="pane-divider" id="pane-divider" title="Drag to resize"></div>
-
-        <!-- Preview Stage & Console Pane -->
-        <section class="preview-pane" id="preview-pane">
-            <div class="preview-toolbar">
-                <div class="btn-group">
-                    <button class="btn active" id="view-full" onclick="setPreviewViewport('100%', '100%', this)">Full</button>
-                    <button class="btn" id="view-tablet" onclick="setPreviewViewport('768px', '100%', this)">Tablet</button>
-                    <button class="btn" id="view-mobile" onclick="setPreviewViewport('375px', '667px', this)">Mobile</button>
-                </div>
-
-                <div style="display:flex; gap:6px;">
-                    <button class="btn" onclick="runSandbox()" title="Reload preview">↻ Refresh</button>
-                    <button class="btn" onclick="openPreviewNewTab()" title="Open preview in new tab">↗ Popout</button>
-                </div>
-            </div>
-
-            <div class="preview-stage">
-                <div class="preview-viewport" id="preview-viewport">
-                    <iframe id="sandbox-frame" sandbox="allow-scripts allow-forms allow-modals allow-same-origin allow-popups" allow="fullscreen; autoplay; gamepad"></iframe>
-                </div>
-            </div>
-
-            <!-- Debug Console -->
-            <div class="console-drawer" id="console-drawer">
-                <div class="console-header">
-                    <span>Console (<span id="console-counter">0</span>)</span>
-                    <button class="btn" style="padding:2px 8px; font-size:10.5px;" onclick="clearConsole()">Clear</button>
-                </div>
-
-                <div class="console-logs" id="console-logs">
-                    <div class="log-row system">✦ Studio Web App loaded. Ready for Computer & Phone.</div>
-                </div>
-
-                <div class="console-repl">
-                    <span style="color:var(--accent-brand); font-family:var(--font-code);">❯</span>
-                    <input type="text" id="repl-input" class="repl-input" placeholder="Eval JS..." onkeydown="handleReplKey(event)">
-                </div>
-            </div>
-        </section>
+    <div class="editor-container">
+      <div id="cm-host" style="height:100%;"></div>
+      <div class="find-bar" id="find-bar">
+        <input type="text" id="find-input" placeholder="Find…">
+        <span class="find-count" id="find-count"></span>
+        <button class="btn btn-icon" style="width:24px;height:24px;" id="find-prev" title="Previous">↑</button>
+        <button class="btn btn-icon" style="width:24px;height:24px;" id="find-next" title="Next">↓</button>
+        <button class="btn btn-icon" style="width:24px;height:24px;" id="find-close" title="Close">✕</button>
+      </div>
     </div>
+  </section>
 
-    <!-- 3. STATUS BAR -->
-    <footer class="statusbar">
-        <div class="statusbar-item">
-            <span id="status-cursor">Ln 1, Col 1</span>
-        </div>
-        <div class="statusbar-item">
-            <span id="status-file-info">0 lines</span>
-            <span>•</span>
-            <span id="status-mode" style="color:var(--accent-brand);">PWA Ready</span>
-        </div>
-    </footer>
+  <div class="pane-divider" id="pane-divider" title="Drag to resize"></div>
 
-    <!-- Projects Modal -->
-    <div class="modal-overlay" id="projects-modal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <span>Manage Projects</span>
-                <button class="btn btn-icon" onclick="closeProjectsModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                    <span style="color:var(--text-secondary); font-size:12px;">Stored offline on this device.</span>
-                    <button class="btn btn-primary" onclick="createNewProjectPrompt()">+ New</button>
-                </div>
-                <div id="projects-list"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" onclick="closeProjectsModal()">Close</button>
-            </div>
-        </div>
+  <section class="preview-col" id="preview-col">
+    <div class="preview-toolbar">
+      <div class="seg-group">
+        <button class="btn active" id="view-full" data-w="100%" data-h="100%">Full</button>
+        <button class="btn" id="view-tablet" data-w="768px" data-h="100%">Tablet</button>
+        <button class="btn" id="view-mobile" data-w="375px" data-h="667px">Mobile</button>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <label class="switch" title="Auto-run on change" style="margin-right:2px;">
+          <input type="checkbox" id="autorun-toggle"><span class="switch-track"></span><span class="switch-thumb"></span>
+        </label>
+        <button class="btn btn-sm" id="refresh-btn" title="Reload preview">↻</button>
+        <button class="btn btn-sm" id="popout-btn" title="Open in new tab">↗</button>
+      </div>
     </div>
-
-    <div class="toast-container" id="toast-container"></div>
-
-    <!-- ==========================================================================
-         APPLICATION SCRIPTS (100% GITHUB PAGES, DESKTOP & MOBILE COMPATIBLE)
-         ========================================================================== -->
-    <script>
-        const STORAGE_PROJECTS = 'afk_studio_projects_v3';
-        const STORAGE_ACTIVE_ID = 'afk_studio_active_id_v3';
-
-        const codeTextarea = document.getElementById('code-textarea');
-        const gutter = document.getElementById('gutter');
-        const projectTitleInput = document.getElementById('project-title-input');
-        const saveTag = document.getElementById('save-tag');
-        const saveStatusText = document.getElementById('save-status-text');
-        const fileListContainer = document.getElementById('file-list-container');
-        const tabsContainer = document.getElementById('tabs-container');
-        const sandboxFrame = document.getElementById('sandbox-frame');
-        const consoleLogs = document.getElementById('console-logs');
-        const consoleCounter = document.getElementById('console-counter');
-        const replInput = document.getElementById('repl-input');
-        const previewViewport = document.getElementById('preview-viewport');
-        const statusCursor = document.getElementById('status-cursor');
-        const statusFileInfo = document.getElementById('status-file-info');
-        const workspaceContainer = document.getElementById('workspace-container');
-
-        let activeProjectId = null;
-        let activeFilePath = "index.html";
-        let openTabs = ["index.html"];
-        let autoSaveTimer = null;
-        let consoleLogCount = 0;
-
-        /* PWA Install Handler (Android, Chrome, Edge, PC) */
-        let deferredPrompt = null;
-        const pwaBtn = document.getElementById('pwa-install-btn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (pwaBtn) pwaBtn.style.display = 'inline-flex';
-        });
-
-        async function installPWA() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                pwaBtn.style.display = 'none';
-                showToast("Studio installed to your device!");
-            }
-            deferredPrompt = null;
-        }
-
-        /* 📱 Mobile View Switcher: Code / Preview / Console */
-        function setMobileTab(mode) {
-            document.querySelectorAll('.mobile-seg-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`m-tab-${mode}`).classList.add('active');
-
-            workspaceContainer.classList.remove('view-mode-code', 'view-mode-preview', 'view-mode-console');
-            workspaceContainer.classList.add(`view-mode-${mode}`);
-
-            if (mode === 'preview') {
-                runSandbox(true);
-            }
-        }
-
-        /* 📱 Mobile Quick-Code Key Inserter */
-        function insertKey(char) {
-            const start = codeTextarea.selectionStart;
-            const end = codeTextarea.selectionEnd;
-            const val = codeTextarea.value;
-
-            codeTextarea.value = val.substring(0, start) + char + val.substring(end);
-            codeTextarea.selectionStart = codeTextarea.selectionEnd = start + char.length;
-            codeTextarea.focus();
-            updateMetrics();
-            triggerChange();
-        }
-
-        /* State Initialization */
-        function initStudio() {
-            let manifest = JSON.parse(localStorage.getItem(STORAGE_PROJECTS) || 'null');
-            if (!manifest || manifest.length === 0) {
-                const defaultProject = {
-                    id: 'proj_' + Date.now(),
-                    title: "Web App",
-                    files: [
-                        {
-                            name: "index.html",
-                            path: "index.html",
-                            type: "html",
-                            content: '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>App</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <div class="card">\n    <h1>I’M AFK Web Studio</h1>\n    <p>Works on Desktop and Phones!</p>\n    <button id="btn">Clicks: 0</button>\n  </div>\n  <script src="app.js">' + '<' + '/script>\n</body>\n</html>'
-                        },
-                        {
-                            name: "style.css",
-                            path: "style.css",
-                            type: "css",
-                            content: 'body { margin:0; background:#050807; color:#F2F8F5; font-family:sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; }\n.card { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); padding:28px; border-radius:20px; text-align:center; max-width:85%; }\nbutton { background:#38E1A6; border:none; color:#050807; padding:12px 24px; border-radius:999px; font-weight:700; font-size:15px; margin-top:14px; cursor:pointer; }'
-                        },
-                        {
-                            name: "app.js",
-                            path: "app.js",
-                            type: "js",
-                            content: 'let count = 0;\ndocument.getElementById("btn").onclick = () => {\n  count++;\n  document.getElementById("btn").innerText = "Clicks: " + count;\n  console.log("Count: " + count);\n};\nconsole.log("Studio App ready.");'
-                        }
-                    ],
-                    updatedAt: Date.now(),
-                    snapshots: []
-                };
-                manifest = [defaultProject];
-                localStorage.setItem(STORAGE_PROJECTS, JSON.stringify(manifest));
-                localStorage.setItem(STORAGE_ACTIVE_ID, defaultProject.id);
-            }
-
-            activeProjectId = localStorage.getItem(STORAGE_ACTIVE_ID) || manifest[0].id;
-            const project = manifest.find(p => p.id === activeProjectId) || manifest[0];
-            activeProjectId = project.id;
-
-            loadProjectState(project);
-            runSandbox(true);
-        }
-
-        function getActiveProject() {
-            const manifest = JSON.parse(localStorage.getItem(STORAGE_PROJECTS) || '[]');
-            return manifest.find(p => p.id === activeProjectId) || manifest[0];
-        }
-
-        function loadProjectState(project) {
-            projectTitleInput.value = project.title;
-            if (!project.files.some(f => f.path === activeFilePath)) {
-                activeFilePath = project.files[0] ? project.files[0].path : "";
-            }
-            if (!openTabs.includes(activeFilePath) && activeFilePath) {
-                openTabs = [activeFilePath];
-            }
-            renderFileList();
-            renderTabs();
-            loadActiveFileContent();
-        }
-
-        function saveActiveProject(silent = false) {
-            const manifest = JSON.parse(localStorage.getItem(STORAGE_PROJECTS) || '[]');
-            const idx = manifest.findIndex(p => p.id === activeProjectId);
-            if (idx === -1) return;
-
-            const file = manifest[idx].files.find(f => f.path === activeFilePath);
-            if (file) file.content = codeTextarea.value;
-
-            manifest[idx].title = projectTitleInput.value.trim() || 'Untitled';
-            manifest[idx].updatedAt = Date.now();
-
-            localStorage.setItem(STORAGE_PROJECTS, JSON.stringify(manifest));
-            saveTag.classList.remove('unsaved');
-            saveStatusText.textContent = 'Saved';
-
-            if (!silent) showToast('Saved');
-        }
-
-        function triggerChange() {
-            saveTag.classList.add('unsaved');
-            saveStatusText.textContent = 'Unsaved';
-            clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(() => saveActiveProject(true), 600);
-        }
-
-        function renderFileList() {
-            const project = getActiveProject();
-            if (!project) return;
-
-            fileListContainer.innerHTML = '';
-            project.files.forEach(file => {
-                const item = document.createElement('div');
-                item.className = `file-item ${file.path === activeFilePath ? 'active' : ''}`;
-                item.innerHTML = `
-                    <div class="file-item-title" onclick="switchActiveFile('${file.path}')">
-                        <span class="file-icon">${file.type === 'html' ? '&lt;&gt;' : (file.type === 'css' ? '#' : (file.type === 'js' ? 'JS' : '•'))}</span>
-                        <span>${file.name}</span>
-                    </div>
-                    <div>
-                        ${project.files.length > 1 ? `<button class="btn" style="padding:2px 6px; font-size:10px;" onclick="deleteFile('${file.path}', event)">✕</button>` : ''}
-                    </div>
-                `;
-                fileListContainer.appendChild(item);
-            });
-        }
-
-        function renderTabs() {
-            tabsContainer.innerHTML = '';
-            openTabs.forEach(path => {
-                const file = getActiveProject().files.find(f => f.path === path);
-                if (!file) return;
-
-                const tab = document.createElement('button');
-                tab.className = `tab ${path === activeFilePath ? 'active' : ''}`;
-                tab.onclick = () => switchActiveFile(path);
-                tab.innerHTML = `<span>${file.name}</span><span class="tab-close" onclick="closeTab('${path}', event)">✕</span>`;
-                tabsContainer.appendChild(tab);
-            });
-        }
-
-        function switchActiveFile(path) {
-            const project = getActiveProject();
-            const curFile = project.files.find(f => f.path === activeFilePath);
-            if (curFile) curFile.content = codeTextarea.value;
-
-            activeFilePath = path;
-            if (!openTabs.includes(path)) openTabs.push(path);
-
-            renderFileList();
-            renderTabs();
-            loadActiveFileContent();
-            
-            // Auto close mobile drawer if open
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.add('collapsed');
-            }
-        }
-
-        function closeTab(path, e) {
-            if (e) e.stopPropagation();
-            openTabs = openTabs.filter(p => p !== path);
-            if (activeFilePath === path) {
-                activeFilePath = openTabs.length > 0 ? openTabs[openTabs.length - 1] : "";
-            }
-            renderTabs();
-            renderFileList();
-            loadActiveFileContent();
-        }
-
-        function loadActiveFileContent() {
-            const project = getActiveProject();
-            const file = project.files.find(f => f.path === activeFilePath);
-            if (file) {
-                codeTextarea.value = file.content;
-                codeTextarea.disabled = false;
-            } else {
-                codeTextarea.value = '';
-                codeTextarea.disabled = true;
-            }
-            updateMetrics();
-        }
-
-        function promptNewFile() {
-            const name = prompt("File name (e.g. style.css, script.js):");
-            if (!name || !name.trim()) return;
-
-            const cleanName = name.trim();
-            const ext = cleanName.split('.').pop().toLowerCase();
-            const project = getActiveProject();
-
-            project.files.push({ name: cleanName, path: cleanName, type: ext, content: '' });
-            saveActiveProject(true);
-            switchActiveFile(cleanName);
-        }
-
-        function deleteFile(path, e) {
-            if (e) e.stopPropagation();
-            if (!confirm(`Delete ${path}?`)) return;
-
-            const project = getActiveProject();
-            project.files = project.files.filter(f => f.path !== path);
-            openTabs = openTabs.filter(t => t !== path);
-            activeFilePath = project.files[0] ? project.files[0].path : "";
-
-            saveActiveProject(true);
-            renderFileList();
-            renderTabs();
-            loadActiveFileContent();
-        }
-
-        function updateMetrics() {
-            requestAnimationFrame(() => {
-                const text = codeTextarea.value;
-                const lines = text.split('\n').length;
-                gutter.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
-                statusFileInfo.textContent = `${lines} lines`;
-            });
-        }
-
-        codeTextarea.addEventListener('input', () => { updateMetrics(); triggerChange(); });
-        codeTextarea.addEventListener('scroll', () => { gutter.scrollTop = codeTextarea.scrollTop; });
-        codeTextarea.addEventListener('click', updateCursorPos);
-        codeTextarea.addEventListener('keyup', updateCursorPos);
-
-        function updateCursorPos() {
-            const pos = codeTextarea.selectionStart;
-            const lines = codeTextarea.value.substring(0, pos).split('\n');
-            statusCursor.textContent = `Ln ${lines.length}, Col ${lines[lines.length - 1].length + 1}`;
-        }
-
-        // Keyboard Shortcuts (Desktop)
-        window.addEventListener('keydown', (e) => {
-            const isCmd = e.ctrlKey || e.metaKey;
-
-            if (isCmd && (e.key === 's' || e.key === 'S')) {
-                e.preventDefault();
-                saveActiveProject();
-                return;
-            }
-
-            if (isCmd && e.key === 'Enter') {
-                e.preventDefault();
-                runSandbox();
-                return;
-            }
-        });
-
-        // Tab indent support
-        codeTextarea.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const start = codeTextarea.selectionStart;
-                const end = codeTextarea.selectionEnd;
-                codeTextarea.value = codeTextarea.value.substring(0, start) + "  " + codeTextarea.value.substring(end);
-                codeTextarea.selectionStart = codeTextarea.selectionEnd = start + 2;
-                updateMetrics();
-                triggerChange();
-            }
-        });
-
-        projectTitleInput.addEventListener('input', triggerChange);
-
-        function formatActiveFile() {
-            const lines = codeTextarea.value.split('\n');
-            let indent = 0;
-            const formatted = lines.map(line => {
-                const t = line.trim();
-                if (t.startsWith('</') || t.startsWith('}') || t.startsWith(']')) indent = Math.max(0, indent - 1);
-                const out = '  '.repeat(indent) + t;
-                if ((t.endsWith('{') || (t.startsWith('<') && !t.startsWith('</') && !t.endsWith('/>') && !t.includes('</'))) && !t.startsWith('<!')) indent++;
-                return out;
-            }).join('\n');
-
-            codeTextarea.value = formatted;
-            updateMetrics();
-            triggerChange();
-            showToast('Formatted');
-        }
-
-        /* --------------------------------------------------------------------------
-           SANDBOX RUNNER (Works 100% on Phone & PC)
-           -------------------------------------------------------------------------- */
-        function runSandbox(silent = false) {
-            saveActiveProject(true);
-            const project = getActiveProject();
-            if (!project) return;
-
-            const htmlFile = project.files.find(f => f.path.endsWith('.html')) || project.files[0];
-            if (!htmlFile) return;
-
-            let bundle = htmlFile.content;
-
-            project.files.filter(f => f.type === 'css').forEach(css => {
-                bundle = bundle.replace('</head>', '<style>/* ' + css.name + ' */\n' + css.content + '\n</style></head>');
-            });
-
-            project.files.filter(f => f.type === 'js').forEach(js => {
-                bundle = bundle.replace('</body>', '<script>/* ' + js.name + ' */\n' + js.content + '\n<' + '/script></body>');
-            });
-
-            const bridge = '<script>' +
-                '(function(){' +
-                '  const _log = console.log, _warn = console.warn, _err = console.error;' +
-                '  console.log = (...args) => { _log(...args); window.parent.postMessage({ type: "CONSOLE_LOG", level: "info", text: args.join(" ") }, "*"); };' +
-                '  console.warn = (...args) => { _warn(...args); window.parent.postMessage({ type: "CONSOLE_LOG", level: "warn", text: args.join(" ") }, "*"); };' +
-                '  console.error = (...args) => { _err(...args); window.parent.postMessage({ type: "CONSOLE_LOG", level: "error", text: args.join(" ") }, "*"); };' +
-                '})();' +
-                '<' + '/script>';
-
-            bundle = bundle.includes('<head>') ? bundle.replace('<head>', '<head>' + bridge) : bridge + bundle;
-
-            // Direct assignment to srcdoc guarantees 100% reliability
-            sandboxFrame.srcdoc = bundle;
-
-            if (!silent) {
-                appendConsoleLog('App executed.', 'system');
-                showToast('Ran code');
-            }
-        }
-
-        window.addEventListener('message', (e) => {
-            if (e.data && e.data.type === 'CONSOLE_LOG') appendConsoleLog(e.data.text, e.data.level);
-        });
-
-        function appendConsoleLog(text, level = 'info') {
-            consoleLogCount++;
-            consoleCounter.textContent = consoleLogCount;
-            const row = document.createElement('div');
-            row.className = `log-row ${level}`;
-            row.textContent = `❯ ${text}`;
-            consoleLogs.appendChild(row);
-            consoleLogs.scrollTop = consoleLogs.scrollHeight;
-        }
-
-        function clearConsole() {
-            consoleLogs.innerHTML = '';
-            consoleLogCount = 0;
-            consoleCounter.textContent = '0';
-        }
-
-        function handleReplKey(e) {
-            if (e.key === 'Enter') {
-                const cmd = replInput.value.trim();
-                if (!cmd) return;
-                appendConsoleLog(cmd, 'repl');
-                try { sandboxFrame.contentWindow.eval(cmd); }
-                catch(err) { appendConsoleLog(err.message, 'error'); }
-                replInput.value = '';
-            }
-        }
-
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
-
-        function setPreviewViewport(w, h, btn) {
-            document.querySelectorAll('.preview-toolbar .btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            previewViewport.style.width = w;
-            previewViewport.style.height = h;
-        }
-
-        function openPreviewNewTab() {
-            const project = getActiveProject();
-            const htmlFile = project.files.find(f => f.path.endsWith('.html')) || project.files[0];
-            if (!htmlFile) return;
-            const win = window.open();
-            win.document.write(htmlFile.content);
-            win.document.close();
-        }
-
-        function exportStandaloneHTML() {
-            const project = getActiveProject();
-            const htmlFile = project.files.find(f => f.path.endsWith('.html')) || project.files[0];
-            if (!htmlFile) return;
-
-            let bundle = htmlFile.content;
-            project.files.filter(f => f.type === 'css').forEach(css => bundle = bundle.replace('</head>', `<style>\n${css.content}\n</style></head>`));
-            project.files.filter(f => f.type === 'js').forEach(js => bundle = bundle.replace('</body>', `<script>\n${js.content}\n<` + `/script></body>`));
-
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([bundle], { type: 'text/html' }));
-            a.download = `${project.title.toLowerCase().replace(/\s+/g, '_')}.html`;
-            a.click();
-            showToast('Exported Standalone HTML');
-        }
-
-        function takeSnapshot() {
-            const project = getActiveProject();
-            if (!project.snapshots) project.snapshots = [];
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            project.snapshots.unshift({ id: 'snap_' + Date.now(), label: `Snapshot at ${time}`, files: JSON.parse(JSON.stringify(project.files)) });
-            if (project.snapshots.length > 6) project.snapshots.pop();
-            saveActiveProject(true);
-            showToast("Snapshot saved");
-        }
-
-        function openProjectsModal() { renderProjectsList(); document.getElementById('projects-modal').classList.add('active'); }
-        function closeProjectsModal() { document.getElementById('projects-modal').classList.remove('active'); }
-
-        function renderProjectsList() {
-            const container = document.getElementById('projects-list');
-            const manifest = JSON.parse(localStorage.getItem(STORAGE_PROJECTS) || '[]');
-            container.innerHTML = manifest.map(p => `
-                <div class="project-row" onclick="switchProject('${p.id}')">
-                    <div>
-                        <div style="font-weight:700; font-size:13px;">${p.title}</div>
-                        <div style="font-size:11px; color:var(--text-tertiary);">${p.files.length} files</div>
-                    </div>
-                    <button class="btn" style="padding:2px 6px; font-size:10px;" onclick="event.stopPropagation(); deleteProject('${p.id}')">✕</button>
-                </div>
-            `).join('');
-        }
-
-        function createNewProjectPrompt() {
-            const title = prompt("Project Name:", "New Project");
-            if (!title) return;
-            const manifest = JSON.parse(localStorage.getItem(STORAGE_PROJECTS) || '[]');
-            const newProj = {
-                id: 'proj_' + Date.now(),
-                title: title.trim(),
-                files: [{ name: "index.html", path: "index.html", type: "html", content: "<h1>New Project</h1>" }],
-                updatedAt: Date.now(),
-                snapshots: []
-            };
-            manifest.unshift(newProj);
-            localStorage.setItem(STORAGE_PROJECTS, JSON.stringify(manifest));
-            switchProject(newProj.id);
-            closeProjectsModal();
-        }
-
-        function deleteProject(id) {
-            if (!confirm("Delete project?")) return;
-            let manifest = JSON.parse(localStorage.getItem(STORAGE_PROJECTS) || '[]');
-            manifest = manifest.filter(p => p.id !== id);
-            localStorage.setItem(STORAGE_PROJECTS, JSON.stringify(manifest));
-            if (activeProjectId === id && manifest.length > 0) switchProject(manifest[0].id);
-            renderProjectsList();
-        }
-
-        function switchProject(id) {
-            activeProjectId = id;
-            localStorage.setItem(STORAGE_ACTIVE_ID, id);
-            loadProjectState(getActiveProject());
-            runSandbox(true);
-            closeProjectsModal();
-        }
-
-        function toggleTheme() {
-            const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-            const next = cur === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('afk_theme', next);
-            showToast(`Theme: ${next}`);
-        }
-
-        function showToast(msg) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-        /* Desktop Drag Divider */
-        const paneDivider = document.getElementById('pane-divider');
-        const editorPane = document.getElementById('editor-pane');
-        let isResizing = false;
-
-        paneDivider.addEventListener('mousedown', () => { isResizing = true; });
-        window.addEventListener('mousemove', (e) => {
-            if (!isResizing) return;
-            const bounds = workspaceContainer.getBoundingClientRect();
-            const pct = ((e.clientX - bounds.left) / bounds.width) * 100;
-            if (pct > 20 && pct < 80) editorPane.style.flex = `0 0 ${pct}%`;
-        });
-        window.addEventListener('mouseup', () => { isResizing = false; });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('afk_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            initStudio();
-        });
-    </script>
+    <div class="preview-stage">
+      <div class="preview-viewport" id="preview-viewport">
+        <iframe id="sandbox-frame" sandbox="allow-scripts allow-forms allow-modals allow-same-origin allow-popups" allow="fullscreen; autoplay; gamepad"></iframe>
+      </div>
+    </div>
+    <div class="console-drawer" id="console-drawer">
+      <div class="console-header" id="console-toggle"><span>Console (<span id="console-counter">0</span>)</span><button class="btn btn-sm" id="clear-console-btn" onclick="event.stopPropagation()">Clear</button></div>
+      <div class="console-logs" id="console-logs"><div class="log-row system">✦ Studio ready.</div></div>
+      <div class="console-repl"><span style="color:var(--accent); font-family:var(--font-mono);">❯</span><input type="text" id="repl-input" placeholder="Evaluate JS in preview…"></div>
+    </div>
+  </section>
+</div>
+
+<footer class="statusbar">
+  <div class="statusbar-item">
+    <span id="status-cursor">Ln 1, Col 1</span>
+    <span id="status-file-info">0 lines</span>
+  </div>
+  <div class="statusbar-item">
+    <span id="status-mode">—</span>
+    <span id="status-autosave">Autosave on</span>
+  </div>
+</footer>
+
+<!-- Project manager modal -->
+<div class="modal-overlay" id="projects-modal">
+  <div class="modal-box">
+    <div class="modal-header"><span>Projects</span><button class="btn btn-icon" id="close-projects-modal">✕</button></div>
+    <div class="modal-body">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span style="color:var(--text-faint); font-size:11.5px;">Stored locally in this browser only.</span>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-sm" id="import-zip-btn">Import .zip</button>
+          <button class="btn btn-sm btn-primary" id="new-project-btn">+ New project</button>
+        </div>
+      </div>
+      <div id="projects-list"></div>
+    </div>
+    <div class="modal-footer"><button class="btn" id="close-projects-modal-2">Close</button></div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal-box">
+    <div class="modal-header"><span>Settings</span><button class="btn btn-icon" id="close-settings-modal">✕</button></div>
+    <div class="modal-body">
+      <div class="settings-group-title">Appearance</div>
+      <div class="settings-row"><div><div class="settings-row-label">Theme</div></div>
+        <select class="util-input" id="set-theme" style="width:140px;"><option value="dark">Dark</option><option value="light">Light</option><option value="system">System</option></select>
+      </div>
+      <div class="settings-row"><div><div class="settings-row-label">Editor font size</div></div>
+        <div class="range-row" style="width:160px;"><input type="range" id="set-fontsize" min="11" max="18" step="1"><span class="range-val" id="set-fontsize-val">13px</span></div>
+      </div>
+      <div class="settings-group-title">Editor</div>
+      <div class="settings-row"><div><div class="settings-row-label">Tab size</div></div>
+        <select class="util-input" id="set-tabsize" style="width:140px;"><option value="2">2 spaces</option><option value="4">4 spaces</option></select>
+      </div>
+      <div class="settings-row"><div><div class="settings-row-label">Word wrap</div></div>
+        <label class="switch"><input type="checkbox" id="set-wordwrap"><span class="switch-track"></span><span class="switch-thumb"></span></label>
+      </div>
+      <div class="settings-row"><div><div class="settings-row-label">Auto-close brackets</div></div>
+        <label class="switch"><input type="checkbox" id="set-closebrackets"><span class="switch-track"></span><span class="switch-thumb"></span></label>
+      </div>
+      <div class="settings-group-title">Preview</div>
+      <div class="settings-row"><div><div class="settings-row-label">Auto-run on change</div><div class="settings-row-hint">Reruns the preview after you pause typing</div></div>
+        <label class="switch"><input type="checkbox" id="set-autorun"><span class="switch-track"></span><span class="switch-thumb"></span></label>
+      </div>
+      <div class="settings-row"><div><div class="settings-row-label">Auto-run delay</div></div>
+        <div class="range-row" style="width:160px;"><input type="range" id="set-autorun-delay" min="300" max="2500" step="100"><span class="range-val" id="set-autorun-delay-val">900ms</span></div>
+      </div>
+      <div class="settings-group-title">Backups</div>
+      <div class="settings-row"><div><div class="settings-row-label">Auto-snapshot interval</div><div class="settings-row-hint">0 disables background snapshots</div></div>
+        <select class="util-input" id="set-snapshot-interval" style="width:140px;"><option value="0">Off</option><option value="5">5 min</option><option value="10">10 min</option><option value="20">20 min</option></select>
+      </div>
+      <div class="settings-row"><div><div class="settings-row-label">Export everything</div><div class="settings-row-hint">All projects, tasks and snapshots as one JSON file</div></div>
+        <button class="btn btn-sm" id="export-backup-btn">Download</button>
+      </div>
+      <div class="settings-row"><div><div class="settings-row-label">Restore from backup</div></div>
+        <button class="btn btn-sm" id="import-backup-btn">Choose file</button>
+      </div>
+      <div class="settings-group-title">Danger zone</div>
+      <div class="settings-row"><div><div class="settings-row-label">Reset all studio data</div><div class="settings-row-hint">Deletes every project on this device</div></div>
+        <button class="btn btn-sm btn-danger" id="reset-data-btn">Reset</button>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-sm" id="shortcuts-btn">Keyboard shortcuts</button><button class="btn" id="close-settings-modal-2">Done</button></div>
+  </div>
+</div>
+
+<!-- Shortcuts modal -->
+<div class="modal-overlay" id="shortcuts-modal">
+  <div class="modal-box">
+    <div class="modal-header"><span>Keyboard shortcuts</span><button class="btn btn-icon" id="close-shortcuts-modal">✕</button></div>
+    <div class="modal-body">
+      <div class="shortcut-row"><span>Command palette</span><span class="kbd">Ctrl/Cmd K</span></div>
+      <div class="shortcut-row"><span>Save now</span><span class="kbd">Ctrl/Cmd S</span></div>
+      <div class="shortcut-row"><span>Run preview</span><span class="kbd">Ctrl/Cmd Enter</span></div>
+      <div class="shortcut-row"><span>Find in file</span><span class="kbd">Ctrl/Cmd F</span></div>
+      <div class="shortcut-row"><span>Search project</span><span class="kbd">Ctrl/Cmd Shift F</span></div>
+      <div class="shortcut-row"><span>Toggle sidebar</span><span class="kbd">Ctrl/Cmd B</span></div>
+      <div class="shortcut-row"><span>New file</span><span class="kbd">Ctrl/Cmd Alt N</span></div>
+    </div>
+    <div class="modal-footer"><button class="btn" id="close-shortcuts-modal-2">Close</button></div>
+  </div>
+</div>
+
+<!-- Command palette -->
+<div class="cp-overlay" id="cp-overlay">
+  <div class="cp-box">
+    <input type="text" class="cp-input" id="cp-input" placeholder="Type a command…">
+    <div class="cp-list" id="cp-list"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<input type="file" id="file-input-hidden" class="hidden" accept=".html,.htm,.css,.js,.json,.txt,.md">
+<input type="file" id="zip-input-hidden" class="hidden" accept=".zip">
+<input type="file" id="backup-input-hidden" class="hidden" accept=".json">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+(function(){
+"use strict";
+
+/* ==========================================================================
+   CONFIG
+   ========================================================================== */
+const DB_KEY = 'afk_studio_data_v4';
+const SETTINGS_KEY = 'afk_studio_settings_v1';
+const LEGACY_PROJECTS_KEY = 'afk_studio_projects_v3';
+const LEGACY_ACTIVE_KEY = 'afk_studio_active_id_v3';
+const MAX_MANUAL_SNAPSHOTS = 8;
+const MAX_AUTO_SNAPSHOTS = 6;
+const SAVE_DEBOUNCE_MS = 500;
+
+const DEFAULT_SETTINGS = {
+  theme: 'dark', fontSize: 13, tabSize: 2, wordWrap: false,
+  closeBrackets: true, autoRun: false, autoRunDelay: 900, snapshotIntervalMin: 10
+};
+
+/* ==========================================================================
+   UTILS
+   ========================================================================== */
+function uid(p){ return p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function debounce(fn, ms){ let t; return function(...args){ clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); }; }
+function extOf(name){ const i = name.lastIndexOf('.'); return i === -1 ? '' : name.slice(i+1).toLowerCase(); }
+function modeFor(ext){
+  if (ext === 'html' || ext === 'htm') return 'htmlmixed';
+  if (ext === 'css') return 'css';
+  if (ext === 'js') return 'javascript';
+  if (ext === 'json') return {name:'javascript', json:true};
+  return null;
+}
+function badgeFor(ext){ if (ext === 'html' || ext === 'htm') return '<>'; if (ext === 'css') return '#'; if (ext === 'js') return 'JS'; if (ext === 'json') return '{}'; return '•'; }
+function relTime(ts){
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 10) return 'just now';
+  if (s < 60) return s + 's ago';
+  const m = Math.floor(s/60); if (m < 60) return m + 'm ago';
+  const h = Math.floor(m/60); if (h < 24) return h + 'h ago';
+  const d = Math.floor(h/24); return d + 'd ago';
+}
+async function copyText(text){
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch(_) {
+    try { const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); return true; }
+    catch(e) { return false; }
+  }
+}
+
+/* ==========================================================================
+   STORAGE (safe wrappers — never let a bad write crash the app)
+   ========================================================================== */
+const Storage = {
+  get(key, fallback){
+    try { const raw = localStorage.getItem(key); if (raw == null) return fallback; return JSON.parse(raw); }
+    catch(e){ return fallback; }
+  },
+  set(key, value){
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+    catch(e){ return false; }
+  },
+  remove(key){ try { localStorage.removeItem(key); } catch(e){} }
+};
+
+/* ==========================================================================
+   NOTIFICATIONS
+   ========================================================================== */
+const toastContainer = document.getElementById('toast-container');
+function notify(type, msg, opts){
+  opts = opts || {};
+  try{
+    const el = document.createElement('div');
+    el.className = 'toast ' + (type || 'info');
+    el.innerHTML = '<span class="toast-msg"></span><span class="toast-close">✕</span>';
+    el.querySelector('.toast-msg').textContent = msg;
+    toastContainer.appendChild(el);
+    let timer;
+    const life = opts.life || (type === 'error' ? 6000 : 3200);
+    const start = () => { timer = setTimeout(() => el.remove(), life); };
+    const stop = () => clearTimeout(timer);
+    el.addEventListener('mouseenter', stop);
+    el.addEventListener('mouseleave', start);
+    el.querySelector('.toast-close').addEventListener('click', () => el.remove());
+    start();
+  } catch(e){ /* never let notifications break the app */ }
+}
+
+/* ==========================================================================
+   DATA STORE — projects, files, tasks, snapshots
+   ========================================================================== */
+let db = null; // { version, projects:[...], activeProjectId }
+let saveFlushTimer = null;
+let savePending = false;
+
+function defaultFiles(){
+  return [
+    { id: uid('f'), name: 'index.html', content:
+      '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>App</title>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <div class="card">\n    <h1>Hello, Studio</h1>\n    <p>Edit the files on the left — the preview updates when you hit Run.</p>\n    <button id="btn">Clicks: 0</button>\n  </div>\n  <script src="app.js"><\/script>\n</body>\n</html>' },
+    { id: uid('f'), name: 'style.css', content:
+      'body{margin:0;background:#0b0d10;color:#e7eaee;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;}\n.card{background:#121519;border:1px solid #22272e;padding:28px;border-radius:10px;text-align:center;max-width:85%;}\nbutton{background:#4c9aff;border:none;color:#fff;padding:10px 20px;border-radius:6px;font-weight:700;font-size:14px;margin-top:14px;cursor:pointer;}' },
+    { id: uid('f'), name: 'app.js', content:
+      'let count = 0;\nconst btn = document.getElementById("btn");\nbtn.onclick = () => {\n  count++;\n  btn.textContent = "Clicks: " + count;\n  console.log("count:", count);\n};\nconsole.log("app ready");' }
+  ];
+}
+function newProject(title){
+  return { id: uid('proj'), title: title || 'New Project', files: defaultFiles(), tasks: [], snapshots: [], autoSnapshots: [], createdAt: Date.now(), updatedAt: Date.now() };
+}
+
+function migrateLegacy(){
+  const legacy = Storage.get(LEGACY_PROJECTS_KEY, null);
+  if (!legacy || !Array.isArray(legacy) || !legacy.length) return null;
+  const activeId = Storage.get(LEGACY_ACTIVE_KEY, null);
+  const projects = legacy.map(p => ({
+    id: p.id || uid('proj'),
+    title: p.title || 'Untitled',
+    files: (p.files || []).map(f => ({ id: uid('f'), name: f.name || f.path || 'file.txt', content: f.content || '' })),
+    tasks: [], snapshots: [], autoSnapshots: [],
+    createdAt: p.updatedAt || Date.now(), updatedAt: p.updatedAt || Date.now()
+  }));
+  notify('info', 'Imported your projects from the previous studio version.');
+  return { version: 4, projects, activeProjectId: activeId && projects.some(p => p.id === activeId) ? activeId : projects[0].id };
+}
+
+function loadDB(){
+  let data = Storage.get(DB_KEY, null);
+  if (!data || !Array.isArray(data.projects) || !data.projects.length){
+    data = migrateLegacy() || { version: 4, projects: [newProject('Web App')], activeProjectId: null };
+    data.activeProjectId = data.activeProjectId || data.projects[0].id;
+  }
+  // backfill any missing fields defensively
+  data.projects.forEach(p => {
+    if (!Array.isArray(p.files) || !p.files.length) p.files = defaultFiles();
+    if (!Array.isArray(p.tasks)) p.tasks = [];
+    if (!Array.isArray(p.snapshots)) p.snapshots = [];
+    if (!Array.isArray(p.autoSnapshots)) p.autoSnapshots = [];
+    p.files.forEach(f => { if (!f.id) f.id = uid('f'); });
+  });
+  if (!data.projects.some(p => p.id === data.activeProjectId)) data.activeProjectId = data.projects[0].id;
+  return data;
+}
+
+function flushSave(){
+  savePending = false;
+  const ok = Storage.set(DB_KEY, db);
+  setSaveStatus(ok ? 'saved' : 'error');
+  if (!ok) notify('error', 'Could not save — local storage may be full or unavailable.');
+}
+const scheduleSave = debounce(flushSave, SAVE_DEBOUNCE_MS);
+function markDirtyAndSave(){ db.activeProject().updatedAt = Date.now(); savePending = true; setSaveStatus('saving'); scheduleSave(); }
+
+function getActiveProject(){ return db.projects.find(p => p.id === db.activeProjectId) || db.projects[0]; }
+db_attachHelper();
+function db_attachHelper(){ /* placeholder so getActiveProject can be referenced as db.activeProject below after db exists */ }
+
+function setSaveStatus(state){
+  const pill = document.getElementById('save-tag');
+  const text = document.getElementById('save-status-text');
+  pill.classList.remove('saving','error');
+  if (state === 'saving'){ pill.classList.add('saving'); text.textContent = 'Saving…'; }
+  else if (state === 'error'){ pill.classList.add('error'); text.textContent = 'Save failed'; }
+  else { text.textContent = 'Saved'; }
+}
+
+/* ==========================================================================
+   SETTINGS
+   ========================================================================== */
+let settings = Object.assign({}, DEFAULT_SETTINGS, Storage.get(SETTINGS_KEY, {}));
+function saveSettings(){ if (!Storage.set(SETTINGS_KEY, settings)) notify('warning', 'Settings could not be saved.'); }
+
+function effectiveTheme(){
+  if (settings.theme === 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return settings.theme;
+}
+function applyTheme(){ document.documentElement.setAttribute('data-theme', effectiveTheme()); }
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (settings.theme === 'system') applyTheme(); });
+
+function applySettingsToEditor(){
+  if (!cm) return;
+  cm.setOption('tabSize', settings.tabSize);
+  cm.setOption('indentUnit', settings.tabSize);
+  cm.setOption('lineWrapping', settings.wordWrap);
+  cm.setOption('autoCloseBrackets', settings.closeBrackets);
+  document.getElementById('cm-host').style.fontSize = settings.fontSize + 'px';
+  cm.refresh();
+}
+
+/* ==========================================================================
+   EDITOR (CodeMirror, one Doc per file — real per-file undo history)
+   ========================================================================== */
+let cm = null;
+const docsCache = new Map(); // fileId -> CodeMirror.Doc
+let activeFileId = null;
+let openTabs = [];
+
+function ensureDoc(file){
+  let doc = docsCache.get(file.id);
+  if (!doc){
+    doc = new CodeMirror.Doc(file.content, modeFor(extOf(file.name)));
+    docsCache.set(file.id, doc);
+  }
+  return doc;
+}
+function clearDocsCache(){ docsCache.clear(); }
+
+function findFile(id){ return getActiveProject().files.find(f => f.id === id); }
+
+function initEditor(){
+  cm = CodeMirror(document.getElementById('cm-host'), {
+    value: '', mode: 'htmlmixed', theme: 'afk', lineNumbers: true,
+    tabSize: settings.tabSize, indentUnit: settings.tabSize, indentWithTabs: false,
+    lineWrapping: settings.wordWrap, matchBrackets: true, autoCloseBrackets: settings.closeBrackets,
+    autoCloseTags: true, styleActiveLine: true, viewportMargin: 50
+  });
+  cm.on('changes', () => {
+    if (!activeFileId) return;
+    const f = findFile(activeFileId);
+    if (!f) return;
+    f.content = cm.getValue();
+    markTabDirty(activeFileId, true);
+    updateLineInfo();
+    markDirtyAndSave();
+    if (settings.autoRun) scheduleAutoRun();
+  });
+  cm.on('cursorActivity', updateCursorInfo);
+  applySettingsToEditor();
+}
+
+function switchActiveFile(fileId){
+  const project = getActiveProject();
+  const file = project.files.find(f => f.id === fileId);
+  if (!file) return;
+  activeFileId = fileId;
+  if (!openTabs.includes(fileId)) openTabs.push(fileId);
+  cm.swapDoc(ensureDoc(file));
+  applySettingsToEditor();
+  renderFileList(); renderTabs(); updateStatusBar();
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.add('collapsed');
+}
+
+function closeTab(fileId, e){
+  if (e) e.stopPropagation();
+  openTabs = openTabs.filter(id => id !== fileId);
+  if (activeFileId === fileId){
+    const next = openTabs[openTabs.length - 1];
+    if (next) switchActiveFile(next);
+    else { activeFileId = null; cm.swapDoc(new CodeMirror.Doc('', null)); }
+  }
+  renderTabs(); renderFileList(); updateStatusBar();
+}
+
+const dirtyTabs = new Set();
+function markTabDirty(fileId, on){ if (on) dirtyTabs.add(fileId); else dirtyTabs.delete(fileId); renderTabs(); }
+
+function updateCursorInfo(){
+  const pos = cm.getCursor();
+  document.getElementById('status-cursor').textContent = `Ln ${pos.line+1}, Col ${pos.ch+1}`;
+}
+function updateLineInfo(){
+  document.getElementById('status-file-info').textContent = cm.lineCount() + ' lines';
+  const f = activeFileId ? findFile(activeFileId) : null;
+  document.getElementById('status-mode').textContent = f ? extOf(f.name).toUpperCase() || 'TEXT' : '—';
+}
+function updateStatusBar(){ updateCursorInfo(); updateLineInfo(); }
+
+/* ==========================================================================
+   FILE MANAGEMENT
+   ========================================================================== */
+function renderFileList(){
+  const project = getActiveProject();
+  const container = document.getElementById('file-list-container');
+  container.innerHTML = '';
+  project.files.forEach(file => {
+    const ext = extOf(file.name);
+    const item = document.createElement('div');
+    item.className = 'file-item' + (file.id === activeFileId ? ' active' : '');
+    item.innerHTML = `
+      <div class="file-item-title">
+        <span class="file-badge">${esc(badgeFor(ext))}</span>
+        <span class="file-item-name">${esc(file.name)}</span>
+        ${dirtyTabs.has(file.id) ? '<span class="file-dot" title="Unsaved changes in this session"></span>' : ''}
+      </div>
+      <div class="file-actions">
+        <button class="btn btn-icon" style="width:22px;height:22px;" data-act="rename" title="Rename">✎</button>
+        <button class="btn btn-icon" style="width:22px;height:22px;" data-act="dup" title="Duplicate">⧉</button>
+        ${project.files.length > 1 ? '<button class="btn btn-icon" style="width:22px;height:22px;" data-act="del" title="Delete">✕</button>' : ''}
+      </div>`;
+    item.addEventListener('click', (e) => { if (!e.target.closest('[data-act]')) switchActiveFile(file.id); });
+    const rn = item.querySelector('[data-act="rename"]'); if (rn) rn.addEventListener('click', e => { e.stopPropagation(); renameFile(file.id); });
+    const du = item.querySelector('[data-act="dup"]'); if (du) du.addEventListener('click', e => { e.stopPropagation(); duplicateFile(file.id); });
+    const de = item.querySelector('[data-act="del"]'); if (de) de.addEventListener('click', e => { e.stopPropagation(); deleteFile(file.id); });
+    container.appendChild(item);
+  });
+}
+function renderTabs(){
+  const container = document.getElementById('tabs-container');
+  container.innerHTML = '';
+  openTabs.forEach(id => {
+    const file = findFile(id);
+    if (!file) return;
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (id === activeFileId ? ' active' : '');
+    tab.innerHTML = `<span>${esc(file.name)}</span>${dirtyTabs.has(id) ? '<span class="tab-dot"></span>' : ''}<span class="tab-close">✕</span>`;
+    tab.addEventListener('click', (e) => { if (!e.target.classList.contains('tab-close')) switchActiveFile(id); });
+    tab.querySelector('.tab-close').addEventListener('click', (e) => closeTab(id, e));
+    container.appendChild(tab);
+  });
+}
+function validUniqueName(name, excludeId){
+  const project = getActiveProject();
+  return name && !project.files.some(f => f.name.toLowerCase() === name.toLowerCase() && f.id !== excludeId);
+}
+function promptNewFile(){
+  const name = prompt('New file name (e.g. about.html, utils.js):');
+  if (!name) return;
+  const clean = name.trim();
+  if (!clean) return;
+  if (!validUniqueName(clean, null)){ notify('warning', 'A file with that name already exists.'); return; }
+  const file = { id: uid('f'), name: clean, content: '' };
+  getActiveProject().files.push(file);
+  markDirtyAndSave();
+  switchActiveFile(file.id);
+  notify('success', 'Created ' + clean);
+}
+function renameFile(fileId){
+  const file = findFile(fileId);
+  const name = prompt('Rename file:', file.name);
+  if (!name) return;
+  const clean = name.trim();
+  if (!clean || clean === file.name) return;
+  if (!validUniqueName(clean, fileId)){ notify('warning', 'A file with that name already exists.'); return; }
+  file.name = clean;
+  docsCache.delete(fileId); // mode may have changed — rebuild doc on next open
+  if (fileId === activeFileId) switchActiveFile(fileId);
+  markDirtyAndSave(); renderFileList(); renderTabs();
+  notify('success', 'Renamed to ' + clean);
+}
+function duplicateFile(fileId){
+  const file = findFile(fileId);
+  const project = getActiveProject();
+  let base = file.name.replace(/(\.[^.]+)$/, '');
+  let ext = file.name.match(/(\.[^.]+)$/);
+  ext = ext ? ext[1] : '';
+  let candidate = base + '-copy' + ext, n = 2;
+  while (!validUniqueName(candidate, null)) { candidate = base + '-copy' + n + ext; n++; }
+  const copy = { id: uid('f'), name: candidate, content: file.content };
+  project.files.push(copy);
+  markDirtyAndSave(); switchActiveFile(copy.id);
+  notify('success', 'Duplicated as ' + candidate);
+}
+function deleteFile(fileId){
+  const project = getActiveProject();
+  if (project.files.length <= 1){ notify('warning', 'A project needs at least one file.'); return; }
+  const file = findFile(fileId);
+  if (!confirm(`Delete ${file.name}? This can't be undone.`)) return;
+  project.files = project.files.filter(f => f.id !== fileId);
+  docsCache.delete(fileId);
+  openTabs = openTabs.filter(id => id !== fileId);
+  dirtyTabs.delete(fileId);
+  if (activeFileId === fileId) switchActiveFile(project.files[0].id);
+  else { renderFileList(); renderTabs(); }
+  markDirtyAndSave();
+  notify('info', 'Deleted ' + file.name);
+}
+
+/* ==========================================================================
+   PROJECT MANAGEMENT
+   ========================================================================== */
+function loadProjectIntoUI(){
+  const project = getActiveProject();
+  document.getElementById('project-title-input').value = project.title;
+  document.getElementById('proj-switch-name').textContent = project.title;
+  clearDocsCache(); dirtyTabs.clear();
+  openTabs = project.files.length ? [project.files[0].id] : [];
+  activeFileId = null;
+  if (project.files.length) switchActiveFile(project.files[0].id);
+  renderFileList(); renderTabs(); renderTasks(); renderSnapshots(); updateStatusBar();
+  resetConsole();
+  runSandbox(true);
+}
+function switchProject(id){
+  db.activeProjectId = id;
+  flushSave();
+  loadProjectIntoUI();
+  closeProjectsModal();
+  notify('info', 'Switched to ' + getActiveProject().title);
+}
+function createProjectPrompt(){
+  const title = prompt('Project name:', 'New Project');
+  if (!title) return;
+  const p = newProject(title.trim());
+  db.projects.unshift(p);
+  switchProject(p.id);
+}
+function duplicateProject(id){
+  const src = db.projects.find(p => p.id === id);
+  const copy = JSON.parse(JSON.stringify(src));
+  copy.id = uid('proj'); copy.title = src.title + ' copy'; copy.createdAt = Date.now(); copy.updatedAt = Date.now();
+  copy.files.forEach(f => f.id = uid('f'));
+  db.projects.unshift(copy);
+  flushSave(); renderProjectsList();
+  notify('success', 'Duplicated project.');
+}
+function deleteProject(id){
+  if (db.projects.length <= 1){ notify('warning', "Can't delete your only project."); return; }
+  if (!confirm('Delete this project and everything in it? This cannot be undone.')) return;
+  const wasActive = db.activeProjectId === id;
+  db.projects = db.projects.filter(p => p.id !== id);
+  if (wasActive) db.activeProjectId = db.projects[0].id;
+  flushSave(); renderProjectsList();
+  if (wasActive) loadProjectIntoUI();
+}
+function renderProjectsList(){
+  const container = document.getElementById('projects-list');
+  container.innerHTML = db.projects.map(p => `
+    <div class="proj-row">
+      <div style="min-width:0;">
+        <div class="proj-row-name" data-open="${p.id}">${esc(p.title)}${p.id === db.activeProjectId ? ' · active' : ''}</div>
+        <div class="proj-row-meta">${p.files.length} files · updated ${relTime(p.updatedAt)}</div>
+      </div>
+      <div class="proj-row-actions">
+        <button class="btn btn-icon" style="width:26px;height:26px;" data-dup="${p.id}" title="Duplicate">⧉</button>
+        <button class="btn btn-icon btn-danger" style="width:26px;height:26px;" data-del="${p.id}" title="Delete">✕</button>
+      </div>
+    </div>`).join('');
+  container.querySelectorAll('[data-open]').forEach(el => el.addEventListener('click', () => switchProject(el.dataset.open)));
+  container.querySelectorAll('[data-dup]').forEach(el => el.addEventListener('click', () => duplicateProject(el.dataset.dup)));
+  container.querySelectorAll('[data-del]').forEach(el => el.addEventListener('click', () => deleteProject(el.dataset.del)));
+}
+function openProjectsModal(){ renderProjectsList(); document.getElementById('projects-modal').classList.add('active'); }
+function closeProjectsModal(){ document.getElementById('projects-modal').classList.remove('active'); }
+
+/* ==========================================================================
+   TASKS
+   ========================================================================== */
+function renderTasks(){
+  const project = getActiveProject();
+  const list = document.getElementById('task-list');
+  if (!project.tasks.length){ list.innerHTML = '<div class="empty-hint">No tasks yet. Keep track of what\'s left to build.</div>'; }
+  else {
+    list.innerHTML = project.tasks.map(t => `
+      <div class="task-item ${t.done ? 'done' : ''}" data-id="${t.id}">
+        <div class="task-check ${t.done ? 'done' : ''}" data-check="${t.id}">${t.done ? '✓' : ''}</div>
+        <div class="task-text" data-check="${t.id}">${esc(t.text)}</div>
+        <div class="task-del" data-del="${t.id}">✕</div>
+      </div>`).join('');
+    list.querySelectorAll('[data-check]').forEach(el => el.addEventListener('click', () => toggleTask(el.dataset.check)));
+    list.querySelectorAll('[data-del]').forEach(el => el.addEventListener('click', () => deleteTask(el.dataset.del)));
+  }
+  const done = project.tasks.filter(t => t.done).length;
+  document.getElementById('task-progress').textContent = project.tasks.length ? `${done} / ${project.tasks.length} done` : '';
+  const badge = document.getElementById('task-badge');
+  const open = project.tasks.filter(t => !t.done).length;
+  if (open > 0){ badge.textContent = open; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
+}
+function addTask(){
+  const input = document.getElementById('task-input');
+  const text = input.value.trim();
+  if (!text) return;
+  getActiveProject().tasks.unshift({ id: uid('t'), text, done: false, createdAt: Date.now() });
+  input.value = '';
+  markDirtyAndSave(); renderTasks();
+}
+function toggleTask(id){
+  const t = getActiveProject().tasks.find(t => t.id === id);
+  if (!t) return;
+  t.done = !t.done; markDirtyAndSave(); renderTasks();
+}
+function deleteTask(id){
+  const project = getActiveProject();
+  project.tasks = project.tasks.filter(t => t.id !== id);
+  markDirtyAndSave(); renderTasks();
+}
+
+/* ==========================================================================
+   SNAPSHOTS (manual + background auto)
+   ========================================================================== */
+function takeSnapshot(auto){
+  const project = getActiveProject();
+  const snap = { id: uid('snap'), label: auto ? 'Auto snapshot' : 'Manual snapshot', ts: Date.now(), auto: !!auto,
+    files: JSON.parse(JSON.stringify(project.files)) };
+  const list = auto ? project.autoSnapshots : project.snapshots;
+  list.unshift(snap);
+  const cap = auto ? MAX_AUTO_SNAPSHOTS : MAX_MANUAL_SNAPSHOTS;
+  while (list.length > cap) list.pop();
+  markDirtyAndSave(); renderSnapshots();
+  if (!auto) notify('success', 'Snapshot taken.');
+}
+function renderSnapshots(){
+  const project = getActiveProject();
+  const all = [...project.snapshots.map(s => ({...s})), ...project.autoSnapshots.map(s => ({...s}))].sort((a,b) => b.ts - a.ts);
+  const container = document.getElementById('snap-list');
+  if (!all.length){ container.innerHTML = '<div class="empty-hint">No snapshots yet. Take one before a big change — auto-snapshots happen in the background too.</div>'; return; }
+  container.innerHTML = all.map(s => `
+    <div class="snap-item">
+      <div class="snap-item-top">
+        <span class="snap-label">${esc(s.label)}</span>
+        ${s.auto ? '<span class="snap-auto-badge">auto</span>' : ''}
+      </div>
+      <div class="snap-time">${relTime(s.ts)} · ${s.files.length} files</div>
+      <div class="snap-actions">
+        <button class="btn btn-sm" data-restore="${s.id}">Restore</button>
+        <button class="btn btn-sm btn-danger" data-del-snap="${s.id}">Delete</button>
+      </div>
+    </div>`).join('');
+  container.querySelectorAll('[data-restore]').forEach(el => el.addEventListener('click', () => restoreSnapshot(el.dataset.restore)));
+  container.querySelectorAll('[data-del-snap]').forEach(el => el.addEventListener('click', () => deleteSnapshot(el.dataset.delSnap)));
+}
+function findSnapshot(id){
+  const project = getActiveProject();
+  return project.snapshots.find(s => s.id === id) || project.autoSnapshots.find(s => s.id === id);
+}
+function restoreSnapshot(id){
+  const snap = findSnapshot(id);
+  if (!snap) return;
+  if (!confirm(`Restore "${snap.label}" from ${relTime(snap.ts)}? Current files will be replaced.`)) return;
+  const project = getActiveProject();
+  project.files = JSON.parse(JSON.stringify(snap.files));
+  project.files.forEach(f => { if (!f.id) f.id = uid('f'); });
+  markDirtyAndSave();
+  loadProjectIntoUI();
+  notify('success', 'Restored snapshot.');
+}
+function deleteSnapshot(id){
+  const project = getActiveProject();
+  project.snapshots = project.snapshots.filter(s => s.id !== id);
+  project.autoSnapshots = project.autoSnapshots.filter(s => s.id !== id);
+  markDirtyAndSave(); renderSnapshots();
+}
+let autoSnapshotTimer = null;
+function setupAutoSnapshot(){
+  if (autoSnapshotTimer) clearInterval(autoSnapshotTimer);
+  if (settings.snapshotIntervalMin > 0){
+    autoSnapshotTimer = setInterval(() => takeSnapshot(true), settings.snapshotIntervalMin * 60 * 1000);
+  }
+}
+
+/* ==========================================================================
+   PROJECT-WIDE SEARCH
+   ========================================================================== */
+function runProjectSearch(query){
+  const results = document.getElementById('search-results');
+  if (!query){ results.innerHTML = '<div class="empty-hint">Type to search across every file in this project.</div>'; return; }
+  const project = getActiveProject();
+  const q = query.toLowerCase();
+  const hits = [];
+  project.files.forEach(file => {
+    const lines = file.content.split('\n');
+    lines.forEach((line, i) => {
+      const idx = line.toLowerCase().indexOf(q);
+      if (idx !== -1 && hits.length < 200) hits.push({ fileId: file.id, fileName: file.name, lineNo: i+1, line, idx, len: query.length });
+    });
+  });
+  if (!hits.length){ results.innerHTML = '<div class="empty-hint">No matches.</div>'; return; }
+  results.innerHTML = hits.map(h => {
+    const before = esc(h.line.slice(0, h.idx));
+    const match = esc(h.line.slice(h.idx, h.idx + h.len));
+    const after = esc(h.line.slice(h.idx + h.len));
+    return `<div class="search-hit" data-file="${h.fileId}" data-line="${h.lineNo}">
+      <div class="search-hit-file">${esc(h.fileName)} · line ${h.lineNo}</div>
+      <div class="search-hit-line">${before}<mark>${match}</mark>${after}</div>
+    </div>`;
+  }).join('');
+  results.querySelectorAll('.search-hit').forEach(el => {
+    el.addEventListener('click', () => {
+      switchActiveFile(el.dataset.file);
+      const line = parseInt(el.dataset.line, 10) - 1;
+      cm.setCursor({ line, ch: 0 });
+      cm.scrollIntoView({ line, ch: 0 }, 100);
+      cm.focus();
+      setActivePanel('files');
+    });
+  });
+}
+
+/* ==========================================================================
+   FIND IN FILE
+   ========================================================================== */
+let searchState = null;
+function openFindBar(){
+  const bar = document.getElementById('find-bar');
+  bar.classList.add('show');
+  const input = document.getElementById('find-input');
+  const sel = cm.getSelection();
+  if (sel) input.value = sel;
+  input.focus(); input.select();
+  runFind(input.value);
+}
+function closeFindBar(){ document.getElementById('find-bar').classList.remove('show'); searchState = null; cm.focus(); }
+function runFind(q){
+  const countEl = document.getElementById('find-count');
+  if (!q){ countEl.textContent = ''; searchState = null; return; }
+  let count = 0, firstMatch = null;
+  const c2 = cm.getSearchCursor(q, { line:0, ch:0 }, { caseFold:true });
+  while (c2.findNext()){ count++; if (!firstMatch) firstMatch = c2.from(); }
+  searchState = { query: q };
+  countEl.textContent = count ? count + ' match' + (count===1?'':'es') : 'no matches';
+  if (firstMatch){ cm.setSelection(firstMatch, { line:firstMatch.line, ch:firstMatch.ch+q.length }); cm.scrollIntoView(firstMatch, 100); }
+}
+function findStep(forward){
+  if (!searchState || !searchState.query) return;
+  const from = forward ? cm.getCursor('to') : cm.getCursor('from');
+  const cursor = cm.getSearchCursor(searchState.query, from, { caseFold:true });
+  let found;
+  if (forward) found = cursor.findNext(); else found = cursor.findPrevious();
+  if (!found){
+    const wrapCursor = cm.getSearchCursor(searchState.query, forward ? {line:0,ch:0} : {line:cm.lineCount()-1, ch: cm.getLine(cm.lineCount()-1).length}, { caseFold:true });
+    found = forward ? wrapCursor.findNext() : wrapCursor.findPrevious();
+    if (found){ cm.setSelection(wrapCursor.from(), wrapCursor.to()); cm.scrollIntoView(wrapCursor.from(), 100); }
+  } else {
+    cm.setSelection(cursor.from(), cursor.to()); cm.scrollIntoView(cursor.from(), 100);
+  }
+}
+
+/* ==========================================================================
+   SANDBOX RUNNER + ERROR CAPTURE
+   ========================================================================== */
+const sandboxFrame = document.getElementById('sandbox-frame');
+let autoRunTimer = null;
+function scheduleAutoRun(){
+  clearTimeout(autoRunTimer);
+  autoRunTimer = setTimeout(() => runSandbox(true), settings.autoRunDelay);
+}
+function bundleProject(project){
+  const htmlFile = project.files.find(f => extOf(f.name) === 'html' || extOf(f.name) === 'htm') || project.files[0];
+  let bundle = htmlFile.content;
+  project.files.filter(f => extOf(f.name) === 'css').forEach(css => {
+    bundle = bundle.includes('</head>') ? bundle.replace('</head>', `<style>/* ${esc(css.name)} */\n${css.content}\n</style></head>`) : bundle + `<style>${css.content}</style>`;
+  });
+  project.files.filter(f => extOf(f.name) === 'js').forEach(js => {
+    bundle = bundle.includes('</body>') ? bundle.replace('</body>', `<script>/* ${esc(js.name)} */\n${js.content}\n<` + `/script></body>`) : bundle + `<script>${js.content}<` + `/script>`;
+  });
+  const bridge = '<script>(function(){' +
+    'var _log=console.log,_warn=console.warn,_err=console.error;' +
+    'function send(level,text){ try{ window.parent.postMessage({type:"CONSOLE_LOG",level:level,text:text},"*"); }catch(e){} }' +
+    'console.log=function(){ _log.apply(console,arguments); send("info",Array.prototype.slice.call(arguments).map(String).join(" ")); };' +
+    'console.warn=function(){ _warn.apply(console,arguments); send("warn",Array.prototype.slice.call(arguments).map(String).join(" ")); };' +
+    'console.error=function(){ _err.apply(console,arguments); send("error",Array.prototype.slice.call(arguments).map(String).join(" ")); };' +
+    'window.addEventListener("error",function(e){ send("error",(e.message||"Script error")+" ("+(e.filename?e.filename.split("/").pop():"")+":"+e.lineno+")"); });' +
+    'window.addEventListener("unhandledrejection",function(e){ send("error","Unhandled promise rejection: "+(e.reason&&e.reason.message?e.reason.message:e.reason)); });' +
+    '})();<' + '/script>';
+  bundle = bundle.includes('<head>') ? bundle.replace('<head>', '<head>' + bridge) : bridge + bundle;
+  return bundle;
+}
+function runSandbox(silent){
+  const project = getActiveProject();
+  if (!project.files.length) return;
+  try {
+    sandboxFrame.srcdoc = bundleProject(project);
+    if (!silent){ appendConsoleLog('Preview executed.', 'system'); }
+  } catch(e){
+    notify('error', 'Could not build preview: ' + e.message);
+  }
+}
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'CONSOLE_LOG') appendConsoleLog(e.data.text, e.data.level);
+});
+
+/* ==========================================================================
+   CONSOLE
+   ========================================================================== */
+let consoleCount = 0;
+function appendConsoleLog(text, level){
+  consoleCount++;
+  document.getElementById('console-counter').textContent = consoleCount;
+  const row = document.createElement('div');
+  row.className = 'log-row ' + (level || 'info');
+  const time = new Date().toLocaleTimeString([], { hour12:false });
+  row.innerHTML = `<span class="lt">${time}</span><span></span>`;
+  row.querySelector('span:last-child').textContent = text;
+  const logs = document.getElementById('console-logs');
+  logs.appendChild(row);
+  logs.scrollTop = logs.scrollHeight;
+}
+function resetConsole(){
+  document.getElementById('console-logs').innerHTML = '<div class="log-row system">✦ Studio ready.</div>';
+  consoleCount = 0; document.getElementById('console-counter').textContent = '0';
+}
+document.getElementById('clear-console-btn').addEventListener('click', resetConsole);
+document.getElementById('console-toggle').addEventListener('click', () => document.getElementById('console-drawer').classList.toggle('collapsed'));
+document.getElementById('repl-input').addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  const cmd = e.target.value.trim();
+  if (!cmd) return;
+  appendConsoleLog('> ' + cmd, 'repl');
+  try { const result = sandboxFrame.contentWindow.eval(cmd); if (result !== undefined) appendConsoleLog(String(result), 'repl'); }
+  catch(err){ appendConsoleLog(err.message, 'error'); }
+  e.target.value = '';
+});
+
+/* ==========================================================================
+   UTILITIES PANEL
+   ========================================================================== */
+document.querySelectorAll('.util-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.util-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.util-pane').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('util-' + tab.dataset.util).classList.add('active');
+  });
+});
+function showUtilErr(id, msg){ const el = document.getElementById(id); if (msg){ el.textContent = msg; el.classList.add('show'); } else el.classList.remove('show'); }
+document.getElementById('json-format').addEventListener('click', () => {
+  const input = document.getElementById('json-input');
+  try { input.value = JSON.stringify(JSON.parse(input.value), null, 2); showUtilErr('json-err', ''); }
+  catch(e){ showUtilErr('json-err', 'Invalid JSON: ' + e.message); }
+});
+document.getElementById('json-minify').addEventListener('click', () => {
+  const input = document.getElementById('json-input');
+  try { input.value = JSON.stringify(JSON.parse(input.value)); showUtilErr('json-err', ''); }
+  catch(e){ showUtilErr('json-err', 'Invalid JSON: ' + e.message); }
+});
+document.getElementById('json-copy').addEventListener('click', async () => {
+  const ok = await copyText(document.getElementById('json-input').value);
+  notify(ok ? 'success' : 'error', ok ? 'Copied.' : 'Copy failed.');
+});
+document.getElementById('b64-encode').addEventListener('click', () => {
+  const input = document.getElementById('b64-input');
+  try { input.value = btoa(unescape(encodeURIComponent(input.value))); showUtilErr('b64-err', ''); }
+  catch(e){ showUtilErr('b64-err', 'Could not encode that text.'); }
+});
+document.getElementById('b64-decode').addEventListener('click', () => {
+  const input = document.getElementById('b64-input');
+  try { input.value = decodeURIComponent(escape(atob(input.value.trim()))); showUtilErr('b64-err', ''); }
+  catch(e){ showUtilErr('b64-err', 'That is not valid Base64.'); }
+});
+document.getElementById('b64-copy').addEventListener('click', async () => {
+  const ok = await copyText(document.getElementById('b64-input').value);
+  notify(ok ? 'success' : 'error', ok ? 'Copied.' : 'Copy failed.');
+});
+function renderTimeOut(){
+  const raw = document.getElementById('time-unix').value.trim();
+  const out = document.getElementById('time-out');
+  if (!raw){ out.textContent = '—'; return; }
+  const n = Number(raw);
+  if (!Number.isFinite(n)){ out.textContent = 'Enter a valid unix timestamp (seconds).'; return; }
+  const d = new Date(n * 1000);
+  if (isNaN(d.getTime())){ out.textContent = 'Out of range.'; return; }
+  out.textContent = d.toLocaleString() + '\n' + d.toISOString();
+}
+document.getElementById('time-unix').addEventListener('input', renderTimeOut);
+document.getElementById('time-now').addEventListener('click', () => { document.getElementById('time-unix').value = Math.floor(Date.now()/1000); renderTimeOut(); });
+document.getElementById('time-copy').addEventListener('click', async () => {
+  const raw = document.getElementById('time-unix').value.trim();
+  const n = Number(raw);
+  if (!Number.isFinite(n)){ notify('warning', 'Enter a timestamp first.'); return; }
+  const ok = await copyText(new Date(n*1000).toISOString());
+  notify(ok ? 'success' : 'error', ok ? 'Copied.' : 'Copy failed.');
+});
+
+/* ==========================================================================
+   ACTIVITY BAR / SIDEBAR
+   ========================================================================== */
+function setActivePanel(name){
+  document.querySelectorAll('.act-btn').forEach(b => b.classList.toggle('active', b.dataset.panel === name));
+  document.querySelectorAll('.sb-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  document.getElementById('sidebar').classList.remove('collapsed');
+  if (name === 'search') document.getElementById('search-input').focus();
+}
+document.querySelectorAll('.act-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active') && !document.getElementById('sidebar').classList.contains('collapsed')){
+      document.getElementById('sidebar').classList.add('collapsed');
+    } else setActivePanel(btn.dataset.panel);
+  });
+});
+document.getElementById('toggle-sidebar-btn').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('collapsed'));
+document.getElementById('m-files-btn').addEventListener('click', () => { setActivePanel('files'); document.getElementById('sidebar').classList.remove('collapsed'); });
+
+/* ==========================================================================
+   COMMAND PALETTE
+   ========================================================================== */
+function commands(){
+  return [
+    { label:'New file', hint:'Ctrl Alt N', run: promptNewFile },
+    { label:'New project', hint:'', run: createProjectPrompt },
+    { label:'Open projects', hint:'', run: openProjectsModal },
+    { label:'Save now', hint:'Ctrl S', run: () => { flushSave(); notify('success','Saved.'); } },
+    { label:'Run preview', hint:'Ctrl Enter', run: () => runSandbox(false) },
+    { label:'Toggle sidebar', hint:'Ctrl B', run: () => document.getElementById('sidebar').classList.toggle('collapsed') },
+    { label:'Find in file', hint:'Ctrl F', run: openFindBar },
+    { label:'Search project', hint:'Ctrl Shift F', run: () => setActivePanel('search') },
+    { label:'Take snapshot', hint:'', run: () => takeSnapshot(false) },
+    { label:'Open settings', hint:'', run: openSettingsModal },
+    { label:'Toggle theme', hint:'', run: cycleTheme },
+    { label:'Export project (.zip)', hint:'', run: exportProjectZip },
+    { label:'Export bundled .html', hint:'', run: exportStandaloneHTML },
+    { label:'Export full backup', hint:'', run: exportBackup },
+    { label:'Keyboard shortcuts', hint:'', run: () => document.getElementById('shortcuts-modal').classList.add('active') }
+  ];
+}
+let cpSelected = 0, cpFiltered = [];
+function openPalette(){
+  document.getElementById('cp-overlay').classList.add('active');
+  const input = document.getElementById('cp-input');
+  input.value = ''; input.focus();
+  renderPalette('');
+}
+function closePalette(){ document.getElementById('cp-overlay').classList.remove('active'); }
+function renderPalette(q){
+  cpFiltered = commands().filter(c => c.label.toLowerCase().includes(q.toLowerCase()));
+  cpSelected = 0;
+  const list = document.getElementById('cp-list');
+  list.innerHTML = cpFiltered.map((c,i) => `<div class="cp-item ${i===0?'sel':''}" data-i="${i}"><span>${esc(c.label)}</span>${c.hint ? `<span class="cp-item-hint">${esc(c.hint)}</span>` : ''}</div>`).join('') || '<div class="empty-hint">No matching commands.</div>';
+  list.querySelectorAll('.cp-item').forEach(el => el.addEventListener('click', () => { runPaletteItem(parseInt(el.dataset.i,10)); }));
+}
+function runPaletteItem(i){
+  const cmd = cpFiltered[i];
+  if (!cmd) return;
+  closePalette();
+  cmd.run();
+}
+document.getElementById('cp-input').addEventListener('input', (e) => renderPalette(e.target.value));
+document.getElementById('cp-input').addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown'){ e.preventDefault(); cpSelected = Math.min(cpSelected+1, cpFiltered.length-1); updatePaletteSel(); }
+  else if (e.key === 'ArrowUp'){ e.preventDefault(); cpSelected = Math.max(cpSelected-1, 0); updatePaletteSel(); }
+  else if (e.key === 'Enter'){ e.preventDefault(); runPaletteItem(cpSelected); }
+  else if (e.key === 'Escape'){ closePalette(); }
+});
+function updatePaletteSel(){
+  document.querySelectorAll('.cp-item').forEach((el,i) => el.classList.toggle('sel', i === cpSelected));
+  const sel = document.querySelector('.cp-item.sel'); if (sel) sel.scrollIntoView({ block:'nearest' });
+}
+document.getElementById('cp-overlay').addEventListener('click', (e) => { if (e.target.id === 'cp-overlay') closePalette(); });
+document.getElementById('palette-btn').addEventListener('click', openPalette);
+document.getElementById('m-palette-btn').addEventListener('click', openPalette);
+
+/* ==========================================================================
+   IMPORT / EXPORT
+   ========================================================================== */
+function exportProjectZip(){
+  if (typeof JSZip === 'undefined'){ notify('error', 'Zip library failed to load — try "Export bundled .html" instead.'); return; }
+  const project = getActiveProject();
+  const zip = new JSZip();
+  project.files.forEach(f => zip.file(f.name, f.content));
+  zip.generateAsync({ type:'blob' }).then(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (project.title || 'project').toLowerCase().replace(/\s+/g,'_') + '.zip';
+    a.click();
+    notify('success', 'Project exported.');
+  }).catch(() => notify('error', 'Could not build the zip file.'));
+}
+function exportStandaloneHTML(){
+  const project = getActiveProject();
+  try {
+    const bundle = bundleProject(project);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([bundle], { type:'text/html' }));
+    a.download = (project.title || 'project').toLowerCase().replace(/\s+/g,'_') + '.html';
+    a.click();
+    notify('success', 'Exported standalone HTML.');
+  } catch(e){ notify('error', 'Export failed: ' + e.message); }
+}
+function exportBackup(){
+  try {
+    const blob = new Blob([JSON.stringify({ db, settings }, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'afk-studio-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    notify('success', 'Backup downloaded.');
+  } catch(e){ notify('error', 'Could not create backup.'); }
+}
+function importBackupFile(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (!parsed.db || !Array.isArray(parsed.db.projects)) throw new Error('Not a valid backup file.');
+      if (!confirm('This will replace all current studio data with the backup. Continue?')) return;
+      db = parsed.db;
+      if (parsed.settings) { settings = Object.assign({}, DEFAULT_SETTINGS, parsed.settings); saveSettings(); applySettings(); }
+      flushSave();
+      loadProjectIntoUI();
+      notify('success', 'Backup restored.');
+    } catch(e){ notify('error', 'Could not read that backup file: ' + e.message); }
+  };
+  reader.onerror = () => notify('error', 'Could not read that file.');
+  reader.readAsText(file);
+}
+function importSingleFile(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    const project = getActiveProject();
+    let name = file.name;
+    if (!validUniqueName(name, null)){
+      let base = name.replace(/(\.[^.]+)$/, ''), ext = (name.match(/(\.[^.]+)$/)||[''])[0], n = 2, candidate = base+'-import'+ext;
+      while (!validUniqueName(candidate, null)) { candidate = base+'-import'+n+ext; n++; }
+      name = candidate;
+    }
+    const f = { id: uid('f'), name, content: String(reader.result) };
+    project.files.push(f);
+    markDirtyAndSave(); renderFileList(); switchActiveFile(f.id);
+    notify('success', 'Imported ' + name);
+  };
+  reader.onerror = () => notify('error', 'Could not read that file.');
+  reader.readAsText(file);
+}
+function importZipFile(file){
+  if (typeof JSZip === 'undefined'){ notify('error', 'Zip library failed to load.'); return; }
+  JSZip.loadAsync(file).then(async zip => {
+    const files = [];
+    const entries = Object.values(zip.files).filter(e => !e.dir);
+    for (const entry of entries){
+      const content = await entry.async('string');
+      const name = entry.name.split('/').pop();
+      if (name) files.push({ id: uid('f'), name, content });
+    }
+    if (!files.length){ notify('warning', 'That zip had no usable files.'); return; }
+    const title = file.name.replace(/\.zip$/i, '') || 'Imported Project';
+    const project = { id: uid('proj'), title, files, tasks: [], snapshots: [], autoSnapshots: [], createdAt: Date.now(), updatedAt: Date.now() };
+    db.projects.unshift(project);
+    switchProject(project.id);
+    notify('success', 'Imported ' + files.length + ' files into a new project.');
+  }).catch(() => notify('error', 'Could not read that zip file.'));
+}
+
+document.getElementById('export-zip-btn').addEventListener('click', exportProjectZip);
+document.getElementById('export-html-btn').addEventListener('click', exportStandaloneHTML);
+document.getElementById('import-btn').addEventListener('click', () => document.getElementById('file-input-hidden').click());
+document.getElementById('file-input-hidden').addEventListener('change', (e) => { if (e.target.files[0]) importSingleFile(e.target.files[0]); e.target.value=''; });
+document.getElementById('import-zip-btn').addEventListener('click', () => document.getElementById('zip-input-hidden').click());
+document.getElementById('zip-input-hidden').addEventListener('change', (e) => { if (e.target.files[0]) importZipFile(e.target.files[0]); e.target.value=''; });
+document.getElementById('import-backup-btn').addEventListener('click', () => document.getElementById('backup-input-hidden').click());
+document.getElementById('backup-input-hidden').addEventListener('change', (e) => { if (e.target.files[0]) importBackupFile(e.target.files[0]); e.target.value=''; });
+document.getElementById('export-backup-btn').addEventListener('click', exportBackup);
+
+/* ==========================================================================
+   SETTINGS MODAL
+   ========================================================================== */
+function applySettings(){
+  applyTheme(); applySettingsToEditor(); setupAutoSnapshot();
+  document.getElementById('autorun-toggle').checked = settings.autoRun;
+}
+function openSettingsModal(){
+  document.getElementById('set-theme').value = settings.theme;
+  document.getElementById('set-fontsize').value = settings.fontSize;
+  document.getElementById('set-fontsize-val').textContent = settings.fontSize + 'px';
+  document.getElementById('set-tabsize').value = settings.tabSize;
+  document.getElementById('set-wordwrap').checked = settings.wordWrap;
+  document.getElementById('set-closebrackets').checked = settings.closeBrackets;
+  document.getElementById('set-autorun').checked = settings.autoRun;
+  document.getElementById('set-autorun-delay').value = settings.autoRunDelay;
+  document.getElementById('set-autorun-delay-val').textContent = settings.autoRunDelay + 'ms';
+  document.getElementById('set-snapshot-interval').value = settings.snapshotIntervalMin;
+  document.getElementById('settings-modal').classList.add('active');
+}
+function closeSettingsModal(){ document.getElementById('settings-modal').classList.remove('active'); }
+document.getElementById('set-theme').addEventListener('change', e => { settings.theme = e.target.value; saveSettings(); applyTheme(); });
+document.getElementById('set-fontsize').addEventListener('input', e => { settings.fontSize = parseInt(e.target.value,10); document.getElementById('set-fontsize-val').textContent = settings.fontSize+'px'; saveSettings(); applySettingsToEditor(); });
+document.getElementById('set-tabsize').addEventListener('change', e => { settings.tabSize = parseInt(e.target.value,10); saveSettings(); applySettingsToEditor(); });
+document.getElementById('set-wordwrap').addEventListener('change', e => { settings.wordWrap = e.target.checked; saveSettings(); applySettingsToEditor(); });
+document.getElementById('set-closebrackets').addEventListener('change', e => { settings.closeBrackets = e.target.checked; saveSettings(); applySettingsToEditor(); });
+document.getElementById('set-autorun').addEventListener('change', e => { settings.autoRun = e.target.checked; saveSettings(); document.getElementById('autorun-toggle').checked = settings.autoRun; });
+document.getElementById('set-autorun-delay').addEventListener('input', e => { settings.autoRunDelay = parseInt(e.target.value,10); document.getElementById('set-autorun-delay-val').textContent = settings.autoRunDelay+'ms'; saveSettings(); });
+document.getElementById('set-snapshot-interval').addEventListener('change', e => { settings.snapshotIntervalMin = parseInt(e.target.value,10); saveSettings(); setupAutoSnapshot(); });
+document.getElementById('autorun-toggle').addEventListener('change', e => { settings.autoRun = e.target.checked; saveSettings(); });
+document.getElementById('reset-data-btn').addEventListener('click', () => {
+  if (!confirm('This deletes every project, task and snapshot stored on this device. This cannot be undone. Continue?')) return;
+  Storage.remove(DB_KEY);
+  db = loadDB();
+  flushSave(); closeSettingsModal(); loadProjectIntoUI();
+  notify('info', 'Studio data reset.');
+});
+function cycleTheme(){
+  const order = ['dark','light','system'];
+  settings.theme = order[(order.indexOf(settings.theme)+1) % order.length];
+  saveSettings(); applyTheme();
+  notify('info', 'Theme: ' + settings.theme);
+}
+
+/* ==========================================================================
+   WIRE UP STATIC CONTROLS
+   ========================================================================== */
+document.getElementById('run-btn').addEventListener('click', () => runSandbox(false));
+document.getElementById('refresh-btn').addEventListener('click', () => runSandbox(true));
+document.getElementById('popout-btn').addEventListener('click', () => {
+  const project = getActiveProject();
+  const win = window.open();
+  if (!win){ notify('warning', 'Pop-up blocked — allow pop-ups to open the preview in a new tab.'); return; }
+  win.document.write(bundleProject(project));
+  win.document.close();
+});
+document.querySelectorAll('.seg-group .btn[data-w]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.seg-group .btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('preview-viewport').style.width = btn.dataset.w;
+    document.getElementById('preview-viewport').style.height = btn.dataset.h;
+  });
+});
+document.getElementById('new-file-btn').addEventListener('click', promptNewFile);
+document.getElementById('take-snapshot-btn').addEventListener('click', () => takeSnapshot(false));
+document.getElementById('task-add-btn').addEventListener('click', addTask);
+document.getElementById('task-input').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+document.getElementById('search-input').addEventListener('input', debounce(e => runProjectSearch(e.target.value.trim()), 150));
+document.getElementById('proj-switch-btn').addEventListener('click', openProjectsModal);
+document.getElementById('new-project-btn').addEventListener('click', createProjectPrompt);
+document.getElementById('close-projects-modal').addEventListener('click', closeProjectsModal);
+document.getElementById('close-projects-modal-2').addEventListener('click', closeProjectsModal);
+document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
+document.getElementById('m-settings-btn').addEventListener('click', openSettingsModal);
+document.getElementById('close-settings-modal').addEventListener('click', closeSettingsModal);
+document.getElementById('close-settings-modal-2').addEventListener('click', closeSettingsModal);
+document.getElementById('shortcuts-btn').addEventListener('click', () => { closeSettingsModal(); document.getElementById('shortcuts-modal').classList.add('active'); });
+document.getElementById('close-shortcuts-modal').addEventListener('click', () => document.getElementById('shortcuts-modal').classList.remove('active'));
+document.getElementById('close-shortcuts-modal-2').addEventListener('click', () => document.getElementById('shortcuts-modal').classList.remove('active'));
+document.getElementById('theme-btn').addEventListener('click', cycleTheme);
+document.getElementById('project-title-input').addEventListener('input', e => {
+  getActiveProject().title = e.target.value;
+  document.getElementById('proj-switch-name').textContent = e.target.value || 'Untitled';
+  markDirtyAndSave();
+});
+document.getElementById('find-btn').addEventListener('click', openFindBar);
+document.getElementById('find-close').addEventListener('click', closeFindBar);
+document.getElementById('find-input').addEventListener('input', e => runFind(e.target.value));
+document.getElementById('find-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter'){ e.preventDefault(); findStep(!e.shiftKey); }
+  else if (e.key === 'Escape'){ closeFindBar(); }
+});
+document.getElementById('find-next').addEventListener('click', () => findStep(true));
+document.getElementById('find-prev').addEventListener('click', () => findStep(false));
+[['projects-modal'],['settings-modal'],['shortcuts-modal']].forEach(([id]) => {
+  document.getElementById(id).addEventListener('click', e => { if (e.target.id === id) document.getElementById(id).classList.remove('active'); });
+});
+
+/* mobile view switch */
+document.querySelectorAll('.mobile-seg').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mobile-seg').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const ws = document.getElementById('workspace');
+    ws.classList.remove('view-code','view-preview','view-console');
+    ws.classList.add('view-' + btn.dataset.mode);
+    if (btn.dataset.mode === 'preview') runSandbox(true);
+  });
+});
+
+/* resizable split (desktop) */
+(function(){
+  const divider = document.getElementById('pane-divider');
+  const editorCol = document.getElementById('editor-col');
+  const workspace = document.getElementById('workspace');
+  let resizing = false;
+  divider.addEventListener('mousedown', () => { resizing = true; document.body.style.cursor='col-resize'; });
+  window.addEventListener('mousemove', e => {
+    if (!resizing) return;
+    const bounds = workspace.getBoundingClientRect();
+    const pct = ((e.clientX - bounds.left) / bounds.width) * 100;
+    if (pct > 20 && pct < 80) editorCol.style.flex = `0 0 ${pct}%`;
+    if (cm) cm.refresh();
+  });
+  window.addEventListener('mouseup', () => { resizing = false; document.body.style.cursor=''; });
+})();
+
+/* keyboard shortcuts */
+window.addEventListener('keydown', e => {
+  const isCmd = e.ctrlKey || e.metaKey;
+  if (isCmd && e.key.toLowerCase() === 'k'){ e.preventDefault(); openPalette(); return; }
+  if (isCmd && e.key.toLowerCase() === 's'){ e.preventDefault(); flushSave(); notify('success','Saved.'); return; }
+  if (isCmd && e.key === 'Enter'){ e.preventDefault(); runSandbox(false); return; }
+  if (isCmd && e.key.toLowerCase() === 'b'){ e.preventDefault(); document.getElementById('sidebar').classList.toggle('collapsed'); return; }
+  if (isCmd && e.shiftKey && e.key.toLowerCase() === 'f'){ e.preventDefault(); setActivePanel('search'); return; }
+  if (isCmd && e.key.toLowerCase() === 'f' && !document.activeElement.closest('.CodeMirror')){ /* let CM/global find handle below */ }
+  if (isCmd && e.key.toLowerCase() === 'f' && document.activeElement.closest('.CodeMirror')){ e.preventDefault(); openFindBar(); return; }
+  if (isCmd && e.altKey && e.key.toLowerCase() === 'n'){ e.preventDefault(); promptNewFile(); return; }
+  if (e.key === 'Escape'){
+    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    closePalette();
+    if (document.getElementById('find-bar').classList.contains('show')) closeFindBar();
+  }
+});
+
+/* flush pending save on close instead of nagging the user */
+window.addEventListener('beforeunload', () => { if (savePending) flushSave(); });
+
+/* global error safety net — never let a bug in the studio go silent */
+window.addEventListener('error', e => { try{ notify('error', 'Studio hit a snag: ' + e.message); }catch(_){} });
+
+/* ==========================================================================
+   INIT
+   ========================================================================== */
+function init(){
+  db = loadDB();
+  getActiveProject(); // sanity touch
+  // retrofit the helper used by markDirtyAndSave
+  db.activeProject = getActiveProject;
+  applyTheme();
+  initEditor();
+  loadProjectIntoUI();
+  applySettings();
+}
+document.addEventListener('DOMContentLoaded', init);
+
+})();
+</script>
 </body>
 </html>
