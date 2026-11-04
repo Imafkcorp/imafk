@@ -1,1714 +1,1127 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Operations — I’M AFK</title>
-    
-    <!-- Typography: Inter + Space Grotesk + JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Supabase Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        /* ==========================================================================
-           DESIGN SYSTEM TOKENS (Shared Foundation)
-           ========================================================================== */
-        :root {
-            --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
-            --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Space Grotesk", sans-serif;
-            --font-code: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
-
-            --radius-xs: 6px;
-            --radius-sm: 10px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --radius-pill: 9999px;
-
-            --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-            --ease-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
-            --duration-fast: 150ms;
-            --duration-normal: 240ms;
-
-            --content-max-width: 1240px;
-        }
-
-        /* --------------------------------------------------------------------------
-           THEME: LIGHT (Sunlit Mist, Sea Salt & River Stone)
-           -------------------------------------------------------------------------- */
-        [data-theme="light"] {
-            --bg-body: #F4F6F5;
-            --glass-surface: rgba(255, 255, 255, 0.75);
-            --glass-surface-hover: rgba(255, 255, 255, 0.9);
-            --glass-dock: rgba(246, 249, 247, 0.86);
-            --glass-card: rgba(255, 255, 255, 0.92);
-
-            --glass-border: rgba(255, 255, 255, 0.85);
-            --glass-border-subtle: rgba(45, 68, 60, 0.08);
-            --glass-border-strong: rgba(45, 68, 60, 0.18);
-            --glass-specular-top: rgba(255, 255, 255, 0.95);
-            --glass-inner-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9);
-
-            --shadow-subtle: 0 4px 14px -3px rgba(32, 48, 42, 0.05);
-            --shadow-float: 0 16px 36px -8px rgba(25, 42, 36, 0.08);
-            --shadow-lift: 0 24px 48px -12px rgba(22, 40, 34, 0.14);
-
-            --text-primary: #192623;
-            --text-secondary: #4A635B;
-            --text-tertiary: #78928A;
-            --text-dim: #9EB5AE;
-
-            --accent-brand: #2E6858;
-            --accent-brand-hover: #225144;
-            --accent-brand-soft: rgba(46, 104, 88, 0.11);
-            --accent-ring: rgba(46, 104, 88, 0.28);
-
-            --success: #288C5A;
-            --success-soft: rgba(40, 140, 90, 0.12);
-            --warning: #C1841B;
-            --warning-soft: rgba(193, 132, 27, 0.12);
-            --danger: #D3455B;
-            --danger-soft: rgba(211, 69, 91, 0.12);
-
-            --input-bg: rgba(255, 255, 255, 0.85);
-            --table-hover: rgba(46, 104, 88, 0.04);
-        }
-
-        /* --------------------------------------------------------------------------
-           THEME: DARK (Obsidian Mineral, Dark Moss & Deep Water)
-           -------------------------------------------------------------------------- */
-        [data-theme="dark"] {
-            --bg-body: #0A0E0D;
-            --glass-surface: rgba(22, 30, 28, 0.72);
-            --glass-surface-hover: rgba(30, 42, 39, 0.85);
-            --glass-dock: rgba(16, 22, 21, 0.85);
-            --glass-card: rgba(26, 36, 33, 0.82);
-
-            --glass-border: rgba(255, 255, 255, 0.11);
-            --glass-border-subtle: rgba(255, 255, 255, 0.05);
-            --glass-border-strong: rgba(255, 255, 255, 0.2);
-            --glass-specular-top: rgba(255, 255, 255, 0.16);
-            --glass-inner-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12);
-
-            --shadow-subtle: 0 4px 14px -3px rgba(0, 0, 0, 0.4);
-            --shadow-float: 0 18px 40px -10px rgba(0, 0, 0, 0.6);
-            --shadow-lift: 0 28px 56px -14px rgba(0, 0, 0, 0.8);
-
-            --text-primary: #F0F6F4;
-            --text-secondary: #9EB5AE;
-            --text-tertiary: #688078;
-            --text-dim: #455751;
-
-            --accent-brand: #5EB89F;
-            --accent-brand-hover: #76C7AF;
-            --accent-brand-soft: rgba(94, 184, 159, 0.16);
-            --accent-ring: rgba(94, 184, 159, 0.36);
-
-            --success: #5EC992;
-            --success-soft: rgba(94, 201, 146, 0.16);
-            --warning: #E5C07B;
-            --warning-soft: rgba(229, 192, 123, 0.16);
-            --danger: #E06C75;
-            --danger-soft: rgba(224, 108, 117, 0.16);
-
-            --input-bg: rgba(16, 23, 21, 0.75);
-            --table-hover: rgba(255, 255, 255, 0.035);
-        }
-
-        /* ==========================================================================
-           RESET & DOCUMENT BASE
-           ========================================================================== */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html {
-            color-scheme: dark light;
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background-color: var(--bg-body);
-            background-image: radial-gradient(circle at 50% 0%, var(--accent-brand-soft) 0%, transparent 60%);
-            background-attachment: fixed;
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            font-size: 13.5px;
-            line-height: 1.5;
-            min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        :focus-visible {
-            outline: 2px solid var(--accent-brand);
-            outline-offset: 3px;
-        }
-
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--glass-border-strong); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
-
-        /* Glass Island Primitive */
-        .island {
-            background: var(--glass-surface);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-inner-shadow), var(--shadow-float);
-            border-radius: var(--radius-lg);
-            transition: transform var(--duration-normal) var(--ease-spring),
-                        box-shadow var(--duration-normal) var(--ease-spring),
-                        border-color var(--duration-normal) var(--ease-spring);
-        }
-
-        /* ==========================================================================
-           1. SECURITY PASSCODE GATE (Apple Auth Sheet)
-           ========================================================================== */
-        #auth-gate {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-            background: rgba(8, 12, 11, 0.85);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-        }
-
-        .auth-card {
-            width: 100%;
-            max-width: 400px;
-            background: var(--glass-card);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            padding: 36px 30px;
-            box-shadow: var(--shadow-lift);
-            text-align: center;
-            transform: scale(1);
-            animation: authPop 260ms var(--ease-spring);
-        }
-
-        @keyframes authPop {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .auth-badge-icon {
-            width: 46px;
-            height: 46px;
-            margin: 0 auto 18px;
-            border-radius: 14px;
-            background: var(--tag-pill-bg, var(--accent-brand-soft));
-            color: var(--accent-brand);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 14px -3px var(--accent-ring);
-        }
-
-        .auth-card h2 {
-            font-family: var(--font-display);
-            font-size: 1.35rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 6px;
-            color: var(--text-primary);
-        }
-
-        .auth-card p {
-            color: var(--text-secondary);
-            font-size: 12.5px;
-            margin-bottom: 24px;
-            line-height: 1.45;
-        }
-
-        .auth-input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: var(--radius-pill);
-            border: 1px solid var(--glass-border);
-            background: var(--input-bg);
-            color: var(--text-primary);
-            font-family: var(--font-code);
-            font-size: 15px;
-            text-align: center;
-            letter-spacing: 5px;
-            outline: none;
-            margin-bottom: 16px;
-            transition: all var(--duration-fast) var(--ease-smooth);
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .auth-input:focus {
-            border-color: var(--accent-brand);
-            box-shadow: 0 0 0 3px var(--accent-ring);
-        }
-
-        /* Common Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: var(--glass-surface);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            padding: 7px 14px;
-            border-radius: var(--radius-pill);
-            font-family: var(--font-sans);
-            font-size: 12.5px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all var(--duration-fast) var(--ease-spring);
-            white-space: nowrap;
-        }
-
-        .btn:hover {
-            background: var(--glass-surface-hover);
-            border-color: var(--glass-specular-top);
-            transform: translateY(-1px);
-        }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
-        .btn-primary {
-            background: var(--accent-brand);
-            border-color: var(--accent-brand);
-            color: #FFFFFF;
-            box-shadow: 0 4px 14px -3px var(--accent-ring);
-            font-weight: 600;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-brand-hover);
-            border-color: var(--accent-brand-hover);
-            color: #FFFFFF;
-        }
-
-        .btn-danger {
-            background: var(--danger-soft);
-            border-color: rgba(224, 108, 117, 0.3);
-            color: var(--danger);
-        }
-
-        .btn-danger:hover {
-            background: var(--danger);
-            color: #FFFFFF;
-        }
-
-        .btn-sm {
-            padding: 4px 10px;
-            font-size: 11.5px;
-        }
-
-        .btn-icon {
-            padding: 6px 9px;
-            border-radius: var(--radius-pill);
-        }
-
-        /* ==========================================================================
-           2. MAIN DASHBOARD CONTAINER
-           ========================================================================== */
-        #admin-panel {
-            display: none;
-            max-width: var(--content-max-width);
-            margin: 0 auto;
-            padding: 20px 20px 80px;
-            width: 100%;
-        }
-
-        /* Top Command Island Header */
-        .admin-nav-island {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px;
-            background: var(--glass-dock);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-pill);
-            box-shadow: var(--shadow-float);
-            margin-bottom: 24px;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .brand-block {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .pulse-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success);
-            animation: pulse-dot 2.5s infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.45; transform: scale(0.85); }
-        }
-
-        .brand-title {
-            font-family: var(--font-display);
-            font-weight: 700;
-            font-size: 14.5px;
-            color: var(--text-primary);
-            letter-spacing: -0.01em;
-        }
-
-        .nav-tools {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .session-timer {
-            font-family: var(--font-code);
-            font-size: 11.5px;
-            color: var(--text-secondary);
-            background: var(--input-bg);
-            border: 1px solid var(--glass-border);
-            padding: 5px 12px;
-            border-radius: var(--radius-pill);
-        }
-
-        /* Telemetry Metric Islands */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .metric-card {
-            background: var(--glass-surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            box-shadow: var(--shadow-subtle);
-        }
-
-        .metric-label {
-            font-size: 11px;
-            font-family: var(--font-sans);
-            font-weight: 600;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .metric-value {
-            font-family: var(--font-display);
-            font-size: 2.1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.1;
-            letter-spacing: -0.02em;
-        }
-
-        .metric-sub {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 6px;
-        }
-
-        /* Apple Segmented Pill Tabs Header */
-        .tabs-header-island {
-            display: flex;
-            gap: 6px;
-            padding: 6px;
-            background: var(--glass-surface);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-pill);
-            margin-bottom: 20px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .tabs-header-island::-webkit-scrollbar { display: none; }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            padding: 7px 16px;
-            border-radius: var(--radius-pill);
-            font-family: var(--font-sans);
-            font-size: 12.5px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--duration-fast) var(--ease-spring);
-            white-space: nowrap;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-primary);
-            background: var(--accent-brand-soft);
-        }
-
-        .tab-btn.active {
-            background: var(--glass-card);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-subtle);
-            font-weight: 600;
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeInTab 200ms var(--ease-smooth); }
-
-        @keyframes fadeInTab {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Search & Filter Controls */
-        .control-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .search-group {
-            display: flex;
-            gap: 10px;
-            flex: 1;
-            min-width: 280px;
-        }
-
-        .admin-input, .admin-select {
-            background: var(--input-bg);
-            border: 1px solid var(--glass-border);
-            padding: 8px 14px;
-            border-radius: var(--radius-pill);
-            color: var(--text-primary);
-            font-family: var(--font-sans);
-            font-size: 13px;
-            outline: none;
-            transition: all var(--duration-fast) var(--ease-smooth);
-        }
-
-        .admin-input { width: 100%; }
-
-        .admin-input:focus, .admin-select:focus {
-            border-color: var(--accent-brand);
-            box-shadow: 0 0 0 3px var(--accent-ring);
-        }
-
-        .admin-select {
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        /* Floating Bulk Action Bar */
-        .bulk-bar {
-            display: none;
-            background: var(--glass-dock);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            border: 1px solid var(--glass-border);
-            padding: 10px 18px;
-            border-radius: var(--radius-pill);
-            margin-bottom: 16px;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow-float);
-            animation: fadeInTab 180ms var(--ease-spring);
-        }
-
-        /* Table Architecture */
-        .table-wrap {
-            background: var(--glass-surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            overflow-x: auto;
-            box-shadow: var(--shadow-subtle);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 12.5px;
-        }
-
-        th {
-            background: rgba(0, 0, 0, 0.03);
-            padding: 12px 16px;
-            font-weight: 600;
-            color: var(--text-tertiary);
-            border-bottom: 1px solid var(--glass-border);
-            text-transform: uppercase;
-            font-size: 10.5px;
-            font-family: var(--font-sans);
-            letter-spacing: 0.05em;
-        }
-
-        td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--glass-border-subtle);
-            color: var(--text-primary);
-            vertical-align: middle;
-        }
-
-        tr:hover td {
-            background: var(--table-hover);
-        }
-
-        .badge-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 9px;
-            border-radius: var(--radius-pill);
-            font-size: 11px;
-            font-family: var(--font-code);
-            font-weight: 600;
-        }
-
-        .badge-live {
-            background: var(--success-soft);
-            color: var(--success);
-            border: 1px solid rgba(94, 201, 146, 0.25);
-        }
-
-        .badge-takedown {
-            background: var(--danger-soft);
-            color: var(--danger);
-            border: 1px solid rgba(224, 108, 117, 0.25);
-        }
-
-        .action-cluster {
-            display: flex;
-            gap: 6px;
-        }
-
-        /* ==========================================================================
-           3. MODALS (INSPECTOR, SANDBOX, TERMINAL)
-           ========================================================================== */
-        .admin-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(8, 12, 11, 0.82);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
-            z-index: 99999;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            opacity: 0;
-            transition: opacity var(--duration-normal) var(--ease-smooth);
-        }
-
-        .admin-modal.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-window {
-            width: 100%;
-            max-width: 960px;
-            max-height: 86vh;
-            background: var(--glass-surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: var(--shadow-lift);
-            transform: scale(0.97);
-            transition: transform var(--duration-normal) var(--ease-spring);
-        }
-
-        .admin-modal.active .modal-window {
-            transform: scale(1);
-        }
-
-        .modal-header {
-            padding: 14px 20px;
-            background: var(--glass-dock);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .code-editor-area {
-            width: 100%;
-            height: 320px;
-            background: #0A0E0D;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            padding: 14px;
-            color: #E6F3EE;
-            font-family: var(--font-code);
-            font-size: 12px;
-            line-height: 1.6;
-            resize: vertical;
-            outline: none;
-        }
-
-        .code-editor-area:focus {
-            border-color: var(--accent-brand);
-            box-shadow: 0 0 0 3px var(--accent-ring);
-        }
-
-        /* Sandbox Frame */
-        .sandbox-stage {
-            background: #000000;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-        }
-
-        .sandbox-viewport {
-            width: 100%;
-            height: 480px;
-            transition: width var(--duration-normal) var(--ease-spring);
-            background: #FFFFFF;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-float);
-        }
-
-        #sandbox-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* CLI Terminal */
-        .terminal-box {
-            background: #080C0B;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 18px;
-            font-family: var(--font-code);
-            font-size: 12px;
-        }
-
-        .terminal-output {
-            height: 250px;
-            overflow-y: auto;
-            margin-bottom: 12px;
-            line-height: 1.55;
-            color: var(--text-secondary);
-        }
-
-        .terminal-input-line {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-top: 1px solid var(--glass-border-subtle);
-            padding-top: 10px;
-        }
-
-        .terminal-prompt {
-            color: var(--accent-brand);
-            font-weight: 600;
-        }
-
-        .terminal-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: inherit;
-        }
-
-        /* Audit Log */
-        .audit-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .audit-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--input-bg);
-            border: 1px solid var(--glass-border);
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            font-family: var(--font-code);
-        }
-
-        @media (max-width: 768px) {
-            .control-bar { flex-direction: column; align-items: stretch; }
-            .search-group { flex-direction: column; }
-            .admin-nav-island { flex-direction: column; border-radius: var(--radius-md); gap: 10px; }
-            .nav-tools { width: 100%; justify-content: space-between; flex-wrap: wrap; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — I'M AFK</title>
+<link rel="icon" type="image/png" href="icon.png">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+
+<style>
+/* ==========================================================================
+   DESIGN TOKENS — shared with the Studio tool, minimal and flat
+   ========================================================================== */
+:root{
+  --font-ui: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --radius-sm: 4px; --radius-md: 6px; --radius-lg: 9px;
+  --dur: 110ms; --ease: cubic-bezier(.2,.6,.3,1);
+  --bar-h: 54px; --content-max: 1240px;
+}
+[data-theme="dark"]{
+  --bg: #0B0D10; --bg-elevated: #121519; --bg-sunken: #07080A; --bg-hover: #1A1F25; --bg-active: #1E2730;
+  --border: #22272E; --border-strong: #353C45;
+  --text: #E7EAEE; --text-muted: #9AA3AE; --text-faint: #5B636E; --text-inverse: #0B0D10;
+  --accent: #4C9AFF; --accent-hover: #6DAEFF; --accent-soft: rgba(76,154,255,0.14);
+  --danger: #F2555A; --danger-soft: rgba(242,85,90,0.14);
+  --warning: #E7A33E; --warning-soft: rgba(231,163,62,0.14);
+  --success: #3FC97A; --success-soft: rgba(63,201,122,0.14);
+  --shadow: 0 8px 28px -8px rgba(0,0,0,0.55);
+  --cm-bg: #0D1013; --cm-gutter: #0B0D10;
+}
+[data-theme="light"]{
+  --bg: #F7F7F8; --bg-elevated: #FFFFFF; --bg-sunken: #EEEFF1; --bg-hover: #EEF0F2; --bg-active: #E5EDFB;
+  --border: #DEE1E5; --border-strong: #C7CCD2;
+  --text: #15181C; --text-muted: #5B636E; --text-faint: #8A919A; --text-inverse: #FFFFFF;
+  --accent: #2563EB; --accent-hover: #1D4FC4; --accent-soft: rgba(37,99,235,0.1);
+  --danger: #D6373C; --danger-soft: rgba(214,55,60,0.1);
+  --warning: #B4700C; --warning-soft: rgba(180,112,12,0.1);
+  --success: #1C9A55; --success-soft: rgba(28,154,85,0.1);
+  --shadow: 0 8px 24px -10px rgba(20,24,30,0.18);
+  --cm-bg: #FFFFFF; --cm-gutter: #F7F7F8;
+}
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+*,*::before,*::after{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ background:var(--bg); }
+body{ color:var(--text); font-family:var(--font-ui); font-size:13px; line-height:1.5; min-height:100vh; -webkit-font-smoothing:antialiased; }
+button,input,textarea,select{ font-family:inherit; color:inherit; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+.hidden{ display:none !important; }
+::-webkit-scrollbar{ width:8px; height:8px; } ::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:var(--border-strong); border-radius:4px; }
+
+/* ---------------- Buttons ---------------- */
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text); padding:7px 13px; border-radius:var(--radius-sm); font-size:12px; font-weight:600; cursor:pointer; transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease); white-space:nowrap; }
+.btn:hover{ background:var(--bg-hover); border-color:var(--border-strong); }
+.btn:active{ transform:translateY(1px); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+.btn-primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn-primary:hover{ background:var(--accent-hover); border-color:var(--accent-hover); }
+.btn-danger{ color:var(--danger); }
+.btn-danger:hover{ background:var(--danger-soft); border-color:var(--danger); }
+.btn-success{ color:var(--success); }
+.btn-success:hover{ background:var(--success-soft); border-color:var(--success); }
+.btn-sm{ padding:5px 10px; font-size:11.5px; }
+.btn-icon{ padding:7px; width:32px; height:32px; }
+
+/* ---------------- Auth gate ---------------- */
+#auth-gate{ position:fixed; inset:0; z-index:10000; display:flex; align-items:center; justify-content:center; padding:20px; background:var(--bg); }
+.auth-card{ width:100%; max-width:380px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-lg); padding:32px 28px; text-align:center; }
+.auth-badge{ width:44px; height:44px; margin:0 auto 16px; border-radius:var(--radius-md); background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; }
+.auth-card h2{ font-size:1.2rem; font-weight:700; margin-bottom:6px; }
+.auth-card p{ color:var(--text-muted); font-size:12px; margin-bottom:22px; line-height:1.5; }
+.auth-input{ width:100%; padding:11px 14px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--bg-sunken); color:var(--text); font-family:var(--font-ui); font-size:13.5px; text-align:left; outline:none; margin-bottom:10px; transition:border-color var(--dur) var(--ease); }
+.auth-input:focus{ border-color:var(--accent); }
+.auth-input:disabled{ opacity:.5; }
+#warning-text{ color:var(--danger); font-size:11.5px; margin-top:12px; font-weight:600; min-height:14px; }
+.auth-note{ margin-top:18px; padding-top:14px; border-top:1px solid var(--border); font-size:10.5px; color:var(--text-faint); line-height:1.5; text-align:left; }
+
+/* ---------------- Main shell ---------------- */
+#admin-panel{ display:none; max-width:var(--content-max); margin:0 auto; padding:16px 16px 60px; }
+.topbar{ display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:16px; gap:12px; flex-wrap:wrap; }
+.brand-block{ display:flex; align-items:center; gap:10px; }
+.pulse-dot{ width:7px; height:7px; border-radius:50%; background:var(--success); flex-shrink:0; }
+.brand-title{ font-weight:700; font-size:13px; }
+.brand-sub{ font-size:10.5px; color:var(--text-faint); }
+.nav-tools{ display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.session-pill{ font-family:var(--font-mono); font-size:11px; color:var(--text-muted); background:var(--bg-sunken); border:1px solid var(--border); padding:5px 11px; border-radius:var(--radius-sm); }
+.session-pill.warn{ color:var(--warning); border-color:var(--warning); }
+
+/* ---------------- Banner ---------------- */
+.banner{ display:none; align-items:center; gap:10px; padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--danger); background:var(--danger-soft); color:var(--danger); font-size:12px; font-weight:600; margin-bottom:14px; }
+.banner.show{ display:flex; }
+
+/* ---------------- Metrics ---------------- */
+.metrics-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:12px; margin-bottom:16px; }
+.metric-card{ background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; }
+.metric-label{ font-size:10.5px; font-weight:700; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:7px; display:flex; justify-content:space-between; align-items:center; }
+.metric-value{ font-size:1.9rem; font-weight:700; line-height:1.1; }
+.metric-sub{ font-size:11.5px; color:var(--text-muted); margin-top:5px; }
+
+/* ---------------- Tabs ---------------- */
+.tabs-header{ display:flex; gap:3px; padding:4px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:16px; overflow-x:auto; scrollbar-width:none; }
+.tabs-header::-webkit-scrollbar{ display:none; }
+.tab-btn{ background:transparent; border:none; color:var(--text-muted); padding:8px 14px; border-radius:var(--radius-sm); font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.tab-btn:hover{ color:var(--text); background:var(--bg-hover); }
+.tab-btn.active{ background:var(--bg-active); color:var(--accent); }
+.tab-content{ display:none; }
+.tab-content.active{ display:block; }
+
+.panel{ background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); padding:22px; }
+.panel h3{ font-size:14.5px; font-weight:700; margin-bottom:4px; }
+.panel .desc{ color:var(--text-muted); font-size:12px; margin-bottom:18px; }
+.field-label{ font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:5px; }
+
+/* ---------------- Controls ---------------- */
+.control-bar{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.search-group{ display:flex; gap:8px; flex:1; min-width:260px; flex-wrap:wrap; align-items:center; }
+.admin-input,.admin-select{ background:var(--bg-sunken); border:1px solid var(--border); padding:8px 12px; border-radius:var(--radius-sm); color:var(--text); font-size:12.5px; outline:none; transition:border-color var(--dur) var(--ease); }
+.admin-input{ flex:1; min-width:180px; }
+.admin-input:focus,.admin-select:focus{ border-color:var(--accent); }
+.admin-select{ cursor:pointer; }
+.chk-label{ display:flex; align-items:center; gap:5px; font-size:11.5px; color:var(--text-muted); cursor:pointer; white-space:nowrap; }
+
+/* ---------------- Bulk bar ---------------- */
+.bulk-bar{ display:none; background:var(--accent-soft); border:1px solid var(--accent); padding:9px 14px; border-radius:var(--radius-sm); margin-bottom:14px; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.bulk-bar.show{ display:flex; }
+#bulk-count{ font-weight:700; font-size:12px; color:var(--accent); }
+
+/* ---------------- Table ---------------- */
+.table-wrap{ background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-md); overflow-x:auto; }
+table{ width:100%; border-collapse:collapse; text-align:left; font-size:12.5px; min-width:760px; }
+th{ background:var(--bg-sunken); padding:10px 14px; font-weight:700; color:var(--text-faint); border-bottom:1px solid var(--border); text-transform:uppercase; font-size:10px; letter-spacing:.05em; cursor:default; white-space:nowrap; }
+td{ padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:middle; }
+tr:last-child td{ border-bottom:none; }
+tr:hover td{ background:var(--bg-hover); }
+.badge{ display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:var(--radius-sm); font-size:10.5px; font-family:var(--font-mono); font-weight:700; }
+.badge-live{ background:var(--success-soft); color:var(--success); }
+.badge-takedown{ background:var(--danger-soft); color:var(--danger); }
+.action-cluster{ display:flex; gap:5px; justify-content:flex-end; }
+.cell-title{ font-weight:600; }
+.cell-sub{ font-size:10.5px; color:var(--text-faint); font-family:var(--font-mono); margin-top:2px; }
+.empty-row td{ text-align:center; padding:40px; color:var(--text-faint); }
+
+.pagination{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 14px; border-top:1px solid var(--border); flex-wrap:wrap; font-size:11.5px; color:var(--text-muted); }
+.pagination .pg-controls{ display:flex; align-items:center; gap:6px; }
+
+/* ---------------- Modals ---------------- */
+.admin-modal{ display:none; position:fixed; inset:0; background:rgba(5,6,8,0.6); z-index:9999; align-items:center; justify-content:center; padding:16px; }
+.admin-modal.active{ display:flex; }
+.modal-window{ width:100%; max-width:980px; max-height:88vh; background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius-lg); display:flex; flex-direction:column; overflow:hidden; box-shadow:var(--shadow); }
+.modal-header{ padding:13px 18px; background:var(--bg-sunken); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.modal-header h3{ font-size:13.5px; font-weight:700; }
+.modal-meta{ font-size:10.5px; color:var(--text-faint); font-family:var(--font-mono); }
+.modal-body{ padding:18px; overflow-y:auto; flex:1; }
+.modal-footer{ padding:12px 18px; background:var(--bg-sunken); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; gap:10px; flex-wrap:wrap; }
+
+.cm-host-box{ border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; height:280px; }
+.CodeMirror{ height:100%; font-family:var(--font-mono); font-size:12px; background:var(--cm-bg); color:var(--text); }
+.CodeMirror-gutters{ background:var(--cm-gutter); border-right:1px solid var(--border); }
+.cm-s-afk .cm-tag{ color:#F07178; } .cm-s-afk .cm-attribute{ color:#C792EA; } .cm-s-afk .cm-string{ color:#C3E88D; }
+.cm-s-afk .cm-comment{ color:var(--text-faint); font-style:italic; } .cm-s-afk .cm-keyword{ color:#C792EA; }
+[data-theme="light"] .cm-s-afk .cm-tag{ color:#BE123C; } [data-theme="light"] .cm-s-afk .cm-attribute{ color:#9333EA; } [data-theme="light"] .cm-s-afk .cm-string{ color:#15803D; }
+
+.sandbox-stage{ background:var(--bg-sunken); padding:14px; display:flex; align-items:center; justify-content:center; }
+.sandbox-viewport{ width:100%; height:480px; background:#fff; border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; transition:width var(--dur) var(--ease); }
+#sandbox-frame{ width:100%; height:100%; border:none; }
+
+.terminal-box{ background:var(--bg-sunken); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px; font-family:var(--font-mono); font-size:12px; }
+.terminal-output{ height:260px; overflow-y:auto; margin-bottom:10px; line-height:1.6; color:var(--text-muted); }
+.terminal-output div{ word-break:break-word; }
+.terminal-input-line{ display:flex; align-items:center; gap:8px; border-top:1px solid var(--border); padding-top:9px; }
+.terminal-prompt{ color:var(--accent); font-weight:700; flex-shrink:0; }
+.terminal-input{ flex:1; background:transparent; border:none; outline:none; color:var(--text); font-family:inherit; font-size:inherit; }
+
+.audit-list{ list-style:none; display:flex; flex-direction:column; gap:5px; max-height:480px; overflow-y:auto; }
+.audit-item{ display:flex; justify-content:space-between; gap:10px; background:var(--bg-sunken); border:1px solid var(--border); padding:9px 12px; border-radius:var(--radius-sm); font-size:11.5px; font-family:var(--font-mono); }
+.audit-item span:first-child{ color:var(--text-faint); flex-shrink:0; }
+
+.scan-row{ background:var(--bg-sunken); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.scan-row.flagged{ border-color:var(--danger); }
+
+/* confirm modal */
+.confirm-box{ max-width:400px; }
+.confirm-body{ padding:18px; font-size:13px; line-height:1.5; color:var(--text-muted); }
+
+/* toasts */
+.toast-container{ position:fixed; bottom:16px; right:16px; display:flex; flex-direction:column-reverse; gap:7px; z-index:20000; max-width:320px; }
+.toast{ background:var(--bg-elevated); border:1px solid var(--border); border-left:3px solid var(--accent); box-shadow:var(--shadow); color:var(--text); padding:9px 11px; border-radius:var(--radius-sm); font-size:12px; display:flex; align-items:flex-start; gap:8px; }
+.toast.success{ border-left-color:var(--success); } .toast.warning{ border-left-color:var(--warning); } .toast.error{ border-left-color:var(--danger); }
+.toast-msg{ flex:1; } .toast-close{ color:var(--text-faint); cursor:pointer; flex-shrink:0; }
+
+@media (max-width:768px){
+  .control-bar{ flex-direction:column; align-items:stretch; }
+  .search-group{ flex-direction:column; align-items:stretch; }
+  .topbar{ flex-direction:column; align-items:stretch; }
+  .nav-tools{ justify-content:space-between; }
+}
+</style>
 </head>
 <body>
 
-    <!-- ================= 1. SECURITY PASSCODE GATE ================= -->
-    <div id="auth-gate">
-        <div class="auth-card">
-            <div class="auth-badge-icon" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-            </div>
-            <h2>Root Authorization</h2>
-            <p>Enter the cryptographic passkey to unlock the administrative management console.</p>
-            <form onsubmit="event.preventDefault(); verifyPasscode();">
-                <input type="password" id="pass-input" class="auth-input" placeholder="••••••••••••" autocomplete="off" required autofocus aria-label="Passkey">
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px;">
-                    <span>Unlock Console</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                </button>
-            </form>
-            <div id="warning-text" style="color: var(--danger); font-size: 11.5px; margin-top: 12px; font-weight: 500;"></div>
-        </div>
+<!-- ================= AUTH GATE ================= -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div class="auth-badge" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0110 0v4"></path></svg>
+    </div>
+    <h2>Admin sign in</h2>
+    <p>Sign in with your admin account to manage the live catalog.</p>
+    <form id="auth-form">
+      <input type="email" id="login-email" class="auth-input" placeholder="you@example.com" autocomplete="username" required autofocus aria-label="Email">
+      <input type="password" id="login-password" class="auth-input" placeholder="Password" autocomplete="current-password" required aria-label="Password">
+      <button type="submit" class="btn btn-primary" style="width:100%; padding:10px;" id="login-btn">
+        <span>Sign in</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </button>
+    </form>
+    <button type="button" id="forgot-password-btn" class="btn btn-sm" style="margin-top:12px; background:transparent; border:none;">Forgot password?</button>
+    <div id="warning-text"></div>
+    <div class="auth-note">This is a real, server-checked sign-in through Supabase Auth — only your one admin account can get past it.</div>
+  </div>
+</div>
+
+<!-- ================= MAIN PANEL ================= -->
+<div id="admin-panel">
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="pulse-dot" aria-hidden="true"></div>
+      <div>
+        <div class="brand-title">I'M AFK · Admin Console</div>
+        <div class="brand-sub" id="brand-sub">Signed in</div>
+      </div>
+    </div>
+    <div class="nav-tools">
+      <span class="session-pill" id="session-pill">15:00</span>
+      <button class="btn btn-sm" id="terminal-btn">Terminal</button>
+      <a href="index.html" class="btn btn-sm">Hub</a>
+      <button class="btn btn-icon btn-sm" id="theme-btn" title="Toggle theme">
+        <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
+      </button>
+      <button class="btn btn-sm btn-danger" id="lock-btn">Sign out</button>
+    </div>
+  </header>
+
+  <div class="banner" id="config-banner"><span>⚠</span><span>Supabase failed to load — check your connection and reload this page. Nothing here will work until it's reachable.</span></div>
+  <div class="banner" id="offline-banner" style="border-color:var(--warning); background:var(--warning-soft); color:var(--warning);"><span>⚠</span><span>You're offline. Changes won't save until your connection is back.</span></div>
+
+  <section class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label"><span>Total catalog</span></div>
+      <div class="metric-value" id="m-total">—</div>
+      <div class="metric-sub">records indexed</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label"><span>Live</span></div>
+      <div class="metric-value" style="color:var(--success);" id="m-live">—</div>
+      <div class="metric-sub" id="m-live-percent">—</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label"><span>Takedowns</span></div>
+      <div class="metric-value" style="color:var(--danger);" id="m-takedowns">—</div>
+      <div class="metric-sub">quarantined</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label"><span>Code footprint</span></div>
+      <div class="metric-value" style="color:var(--accent);" id="m-size">—</div>
+      <div class="metric-sub">standalone script assets</div>
+    </div>
+  </section>
+
+  <div class="tabs-header" role="tablist">
+    <button class="tab-btn active" data-tab="catalog">Catalog</button>
+    <button class="tab-btn" data-tab="deploy">Direct deploy</button>
+    <button class="tab-btn" data-tab="scanner">Safety scanner</button>
+    <button class="tab-btn" data-tab="backup">Backup &amp; restore</button>
+    <button class="tab-btn" data-tab="audit">Audit log</button>
+  </div>
+
+  <!-- CATALOG -->
+  <div id="tab-catalog" class="tab-content active">
+    <div class="control-bar">
+      <div class="search-group">
+        <input type="text" id="catalog-search" class="admin-input" placeholder="Search title, author, email, or ID…">
+        <label class="chk-label"><input type="checkbox" id="search-code-toggle"> include code</label>
+        <select id="status-filter" class="admin-select"><option value="all">All statuses</option><option value="live">Only live</option><option value="takedown">Only takedown</option></select>
+        <select id="sort-filter" class="admin-select"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="alpha">Title A–Z</option><option value="size">Code size</option></select>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-sm" id="export-filtered-btn">Export view (.json)</button>
+        <button class="btn btn-sm" id="sync-btn">↻ Sync DB</button>
+      </div>
     </div>
 
-    <!-- ================= 2. MAIN OPERATIONS HUB ================= -->
-    <div id="admin-panel">
-        
-        <!-- Top Command Island Header -->
-        <header class="admin-nav-island">
-            <div class="brand-block">
-                <div class="pulse-indicator" aria-hidden="true"></div>
-                <div>
-                    <div class="brand-title">I’M AFK &bull; System Node Operations</div>
-                    <div style="font-size: 11px; color: var(--text-tertiary);">Root Authorization Active</div>
-                </div>
-            </div>
-            
-            <div class="nav-tools">
-                <span class="session-timer" id="session-timer">LOCK IN: 15:00</span>
-                <button class="btn btn-sm" onclick="openTerminalModal()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="4 17 10 11 4 5"></polyline>
-                        <line x1="12" y1="19" x2="20" y2="19"></line>
-                    </svg>
-                    <span>Terminal</span>
-                </button>
-                <a href="index.html" class="btn btn-sm">Return to Hub</a>
-                <button class="btn btn-icon btn-sm" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle theme">
-                    <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="5"></circle>
-                        <line x1="12" y1="1" x2="12" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="23"></line>
-                    </svg>
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="terminateSession()">Lock</button>
-            </div>
-        </header>
-
-        <!-- Metric Grid -->
-        <section class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Total Catalog <span>📦</span></div>
-                <div class="metric-value" id="m-total">0</div>
-                <div class="metric-sub">Catalog records indexed</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Live Nodes <span>🟢</span></div>
-                <div class="metric-value" style="color: var(--success);" id="m-live">0</div>
-                <div class="metric-sub" id="m-live-percent">100% active</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Takedowns <span>⚠️</span></div>
-                <div class="metric-value" style="color: var(--danger);" id="m-takedowns">0</div>
-                <div class="metric-sub">Quarantine entries</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Code Footprint <span>💾</span></div>
-                <div class="metric-value" style="color: var(--accent-brand);" id="m-size">0 KB</div>
-                <div class="metric-sub">Standalone script assets</div>
-            </div>
-        </section>
-
-        <!-- Apple Segmented Pill Tabs Header -->
-        <div class="tabs-header-island" role="tablist">
-            <button class="tab-btn active" onclick="switchTab('catalog', this)">Catalog Management</button>
-            <button class="tab-btn" onclick="switchTab('deploy', this)">Direct Deploy</button>
-            <button class="tab-btn" onclick="switchTab('scanner', this)">Code Safety Scanner</button>
-            <button class="tab-btn" onclick="switchTab('backup', this)">Backup & JSON</button>
-            <button class="tab-btn" onclick="switchTab('audit', this)">Audit Logs</button>
-        </div>
-
-        <!-- ================= TAB 1: CATALOG MANAGEMENT ================= -->
-        <div id="tab-catalog" class="tab-content active">
-            <div class="control-bar">
-                <div class="search-group">
-                    <input type="text" id="catalog-search" class="admin-input" placeholder="Search title, author, email, or UUID..." oninput="renderFilteredCatalog()">
-                    <select id="status-filter" class="admin-select" onchange="renderFilteredCatalog()">
-                        <option value="all">All Statuses</option>
-                        <option value="live">Only Live</option>
-                        <option value="takedown">Only Taken Down</option>
-                    </select>
-                    <select id="sort-filter" class="admin-select" onchange="renderFilteredCatalog()">
-                        <option value="newest">Sort: Newest</option>
-                        <option value="oldest">Sort: Oldest</option>
-                        <option value="alpha">Sort: Title (A-Z)</option>
-                        <option value="size">Sort: Code Size</option>
-                    </select>
-                </div>
-                <button class="btn btn-sm" onclick="fetchFullDatabase()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="23 4 23 10 17 10"></polyline>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                    </svg>
-                    <span>Sync DB</span>
-                </button>
-            </div>
-
-            <!-- Floating Bulk Action Bar -->
-            <div id="bulk-bar" class="bulk-bar">
-                <span id="bulk-count" style="font-weight: 600; font-size: 12.5px;">0 items selected</span>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-sm btn-primary" onclick="bulkSetStatus('live')">Set Live</button>
-                    <button class="btn btn-sm btn-danger" onclick="bulkSetStatus('takedown')">Takedown</button>
-                    <button class="btn btn-sm" onclick="bulkExportSelected()">Export JSON</button>
-                    <button class="btn btn-sm btn-danger" onclick="bulkDeleteSelected()">Delete</button>
-                </div>
-            </div>
-
-            <!-- Table View -->
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 36px;"><input type="checkbox" id="select-all-cb" onchange="toggleSelectAll(this)"></th>
-                            <th>Project</th>
-                            <th>Author / Email</th>
-                            <th>Size</th>
-                            <th>Status</th>
-                            <th>Published</th>
-                            <th style="text-align: right;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="catalog-tbody">
-                        <tr><td colspan="7" style="text-align: center; padding: 36px; color: var(--text-tertiary);">Syncing catalog...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ================= TAB 2: DIRECT DEPLOY ================= -->
-        <div id="tab-deploy" class="tab-content">
-            <div class="island" style="padding: 28px;">
-                <h3 style="font-family: var(--font-display); font-size: 16px; margin-bottom: 4px;">Deploy Project Directly</h3>
-                <p style="color: var(--text-secondary); font-size: 12.5px; margin-bottom: 22px;">Publish an approved HTML5 build directly to the live community catalog.</p>
-                
-                <form onsubmit="event.preventDefault(); handleAdminDeploy();" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Title *</label>
-                        <input type="text" id="deploy-title" class="admin-input" placeholder="e.g. Minimal Canvas Game" required style="margin-top: 4px;">
-                    </div>
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Author Credits *</label>
-                        <input type="text" id="deploy-author" class="admin-input" placeholder="e.g. Studio Node" required style="margin-top: 4px;">
-                    </div>
-                    <div style="grid-column: 1 / -1;">
-                        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Contact Email</label>
-                        <input type="email" id="deploy-email" class="admin-input" placeholder="admin@imafk.net" style="margin-top: 4px;">
-                    </div>
-                    <div style="grid-column: 1 / -1;">
-                        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Executable HTML5 Code *</label>
-                        <textarea id="deploy-code" class="code-editor-area" style="height: 220px; margin-top: 4px;" placeholder="<!DOCTYPE html>&#10;<html>...</html>" required></textarea>
-                    </div>
-                    <div style="grid-column: 1 / -1;">
-                        <button type="submit" class="btn btn-primary">Deploy to Catalog</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- ================= TAB 3: CODE SAFETY SCANNER ================= -->
-        <div id="tab-scanner" class="tab-content">
-            <div class="island" style="padding: 28px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
-                    <div>
-                        <h3 style="font-family: var(--font-display); font-size: 16px;">Static Code Security Audit</h3>
-                        <p style="color: var(--text-secondary); font-size: 12.5px;">Audits catalog items for crypto miners, arbitrary eval, and unauthorized frame escapes.</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="runGlobalSecurityAudit()">Run Global Scan</button>
-                </div>
-                <div id="scanner-results" style="display: flex; flex-direction: column; gap: 10px;">
-                    <div style="color: var(--text-tertiary); padding: 32px; text-align: center;">Click "Run Global Scan" to audit catalog codebases.</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= TAB 4: BACKUP & DATA EXPORT ================= -->
-        <div id="tab-backup" class="tab-content">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
-                <div class="island" style="padding: 26px;">
-                    <h3 style="font-family: var(--font-display); font-size: 15px; margin-bottom: 6px;">Export Catalog Snapshot</h3>
-                    <p style="color: var(--text-secondary); font-size: 12.5px; margin-bottom: 18px;">Download a complete JSON backup of all games and metadata.</p>
-                    <button class="btn btn-primary" onclick="exportFullDatabaseJSON()">Download .json Backup</button>
-                </div>
-                <div class="island" style="padding: 26px;">
-                    <h3 style="font-family: var(--font-display); font-size: 15px; margin-bottom: 6px;">Restore Snapshot</h3>
-                    <p style="color: var(--text-secondary); font-size: 12.5px; margin-bottom: 18px;">Import a previously exported JSON backup into the database.</p>
-                    <input type="file" id="import-json-file" accept=".json" style="display:none;" onchange="handleJSONImport(event)">
-                    <button class="btn btn-glass" onclick="document.getElementById('import-json-file').click()">Select JSON Backup</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= TAB 5: AUDIT & LOGS ================= -->
-        <div id="tab-audit" class="tab-content">
-            <div class="island" style="padding: 28px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3 style="font-family: var(--font-display); font-size: 15px;">Session Operations Log</h3>
-                    <button class="btn btn-sm" onclick="clearAuditLogs()">Clear</button>
-                </div>
-                <ul class="audit-list" id="audit-log-container">
-                    <li class="audit-item"><span>[SYSTEM]</span><span>Admin environment initialized.</span></li>
-                </ul>
-            </div>
-        </div>
+    <div class="bulk-bar" id="bulk-bar">
+      <span id="bulk-count">0 selected</span>
+      <div style="display:flex; gap:7px; flex-wrap:wrap;">
+        <button class="btn btn-sm btn-success" id="bulk-live-btn">Set live</button>
+        <button class="btn btn-sm btn-danger" id="bulk-takedown-btn">Takedown</button>
+        <button class="btn btn-sm" id="bulk-export-btn">Export JSON</button>
+        <button class="btn btn-sm btn-danger" id="bulk-delete-btn">Delete</button>
+      </div>
     </div>
 
-    <!-- ================= CODE EDITOR MODAL ================= -->
-    <div class="admin-modal" id="editor-modal" role="dialog" aria-modal="true">
-        <div class="modal-window">
-            <div class="modal-header">
-                <div>
-                    <h3 id="editor-modal-title" style="font-family: var(--font-display); font-size: 15px;">Edit Code</h3>
-                    <span id="editor-modal-meta" style="font-size: 11px; color: var(--text-tertiary); font-family: var(--font-code);">ID: --</span>
-                </div>
-                <button class="btn btn-sm" onclick="closeEditorModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Title</label>
-                        <input type="text" id="edit-title" class="admin-input" style="margin-top: 4px;">
-                    </div>
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Author Credits</label>
-                        <input type="text" id="edit-author" class="admin-input" style="margin-top: 4px;">
-                    </div>
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Contact Email</label>
-                        <input type="email" id="edit-email" class="admin-input" style="margin-top: 4px;">
-                    </div>
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Status</label>
-                        <select id="edit-status" class="admin-select" style="width: 100%; margin-top: 4px;">
-                            <option value="live">Live</option>
-                            <option value="takedown">Takedown / Quarantined</option>
-                        </select>
-                    </div>
-                </div>
-                <label style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary);">Standalone HTML Code</label>
-                <textarea id="edit-code" class="code-editor-area" style="margin-top: 4px;"></textarea>
-            </div>
-            <div style="padding: 14px 20px; background: var(--glass-dock); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
-                <span id="editor-stats" style="font-family: var(--font-code); font-size: 11.5px; color: var(--text-tertiary);">0 chars</span>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-sm btn-glass" onclick="testEditedCodeInSandbox()">Test Run</button>
-                    <button class="btn btn-sm btn-primary" onclick="saveEditedGame()">Save & Patch DB</button>
-                </div>
-            </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:32px;"><input type="checkbox" id="select-all-cb"></th>
+            <th>Project</th><th>Author / Email</th><th>Size</th><th>Status</th><th>Published</th>
+            <th style="text-align:right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="catalog-tbody"><tr class="empty-row"><td colspan="7">Loading…</td></tr></tbody>
+      </table>
+      <div class="pagination" id="pagination">
+        <span id="pg-summary">—</span>
+        <div class="pg-controls">
+          <select id="page-size" class="admin-select btn-sm"><option value="25">25 / page</option><option value="50">50 / page</option><option value="100">100 / page</option></select>
+          <button class="btn btn-sm" id="pg-prev">‹ Prev</button>
+          <span id="pg-label">1 / 1</span>
+          <button class="btn btn-sm" id="pg-next">Next ›</button>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- ================= MULTI-DEVICE SANDBOX MODAL ================= -->
-    <div class="admin-modal" id="sandbox-modal" role="dialog" aria-modal="true">
-        <div class="modal-window">
-            <div class="modal-header">
-                <div>
-                    <h3 id="sandbox-title" style="font-family: var(--font-display); font-size: 15px;">Sandbox Preview</h3>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="display: flex; gap: 4px;">
-                        <button class="btn btn-sm" onclick="setSandboxViewport('100%', this)">Full</button>
-                        <button class="btn btn-sm" onclick="setSandboxViewport('768px', this)">Tablet</button>
-                        <button class="btn btn-sm" onclick="setSandboxViewport('390px', this)">Mobile</button>
-                    </div>
-                    <button class="btn btn-sm" onclick="reloadSandboxFrame()">↻ Reload</button>
-                    <button class="btn btn-sm" onclick="closeSandboxModal()">✕</button>
-                </div>
-            </div>
-            <div class="modal-body sandbox-stage">
-                <div class="sandbox-viewport" id="sandbox-viewport-box">
-                    <iframe id="sandbox-frame" sandbox="allow-scripts allow-forms allow-pointer-lock allow-modals" allow="fullscreen; autoplay; gamepad"></iframe>
-                </div>
-            </div>
+  <!-- DEPLOY -->
+  <div id="tab-deploy" class="tab-content">
+    <div class="panel">
+      <h3>Deploy a project directly</h3>
+      <p class="desc">Publish an approved HTML5 build straight to the live catalog.</p>
+      <form id="deploy-form">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div><span class="field-label">Title *</span><input type="text" id="deploy-title" class="admin-input" style="width:100%;" required></div>
+          <div><span class="field-label">Author credit *</span><input type="text" id="deploy-author" class="admin-input" style="width:100%;" required></div>
+          <div style="grid-column:1/-1;"><span class="field-label">Contact email</span><input type="email" id="deploy-email" class="admin-input" style="width:100%;"></div>
         </div>
+        <span class="field-label">Standalone HTML code *</span>
+        <div class="cm-host-box" id="deploy-cm-host"></div>
+        <div id="deploy-warning" style="font-size:11.5px; color:var(--warning); margin-top:8px; display:none;"></div>
+        <div style="margin-top:14px;"><button type="submit" class="btn btn-primary" id="deploy-submit-btn">Deploy to catalog</button></div>
+      </form>
     </div>
+  </div>
 
-    <!-- ================= CLI TERMINAL MODAL ================= -->
-    <div class="admin-modal" id="terminal-modal" role="dialog" aria-modal="true">
-        <div class="modal-window" style="max-width: 680px;">
-            <div class="modal-header">
-                <span style="font-family: var(--font-code); font-weight: 600; font-size: 12.5px;">Root CLI Terminal</span>
-                <button class="btn btn-sm" onclick="closeTerminalModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <div class="terminal-box">
-                    <div class="terminal-output" id="terminal-output">
-                        Type "help" for a list of available operations.<br>
-                    </div>
-                    <div class="terminal-input-line">
-                        <span class="terminal-prompt">root@imafk:~#</span>
-                        <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" onkeydown="handleTerminalCommand(event)">
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- SCANNER -->
+  <div id="tab-scanner" class="tab-content">
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:18px;">
+        <div><h3>Static code safety audit</h3><p class="desc" style="margin:0;">Flags crypto miners, dynamic eval, frame escapes, and other red flags across the catalog.</p></div>
+        <button class="btn btn-primary" id="run-scan-btn">Run global scan</button>
+      </div>
+      <div id="scanner-results"><div style="color:var(--text-faint); padding:28px; text-align:center;">Click "Run global scan" to audit catalog code.</div></div>
     </div>
-
-    <!-- ================= CORE JAVASCRIPT ================= -->
-    <script>
-        /* -------------------------------------------------------------
-           1. SECURITY AUTHENTICATION & SESSION LIFECYCLE
-        ------------------------------------------------------------- */
-        const _k = [95, 118, 124, 121, 114, 133, 130, 128, 63, 61, 62, 61];
-        let sessionTimerInterval = null;
-        let sessionSecondsRemaining = 900; // 15 mins
-
-        function verifyPasscode() {
-            const input = document.getElementById('pass-input').value.trim();
-            const match = input.length === _k.length && [...input].every((c, i) => c.charCodeAt(0) + 13 === _k[i]);
-            if (match) {
-                sessionStorage.setItem('afk_authenticated', 'true');
-                grantAccess();
-            } else {
-                document.getElementById('pass-input').value = '';
-                document.getElementById('warning-text').textContent = 'Invalid root authorization key.';
-            }
-        }
-
-        function grantAccess() {
-            document.getElementById('auth-gate').style.display = 'none';
-            document.getElementById('admin-panel').style.display = 'block';
-            startSessionTimer();
-            logAudit("Admin authenticated with root session credentials.");
-            fetchFullDatabase();
-        }
-
-        function startSessionTimer() {
-            sessionSecondsRemaining = 900;
-            clearInterval(sessionTimerInterval);
-            sessionTimerInterval = setInterval(() => {
-                sessionSecondsRemaining--;
-                const mins = String(Math.floor(sessionSecondsRemaining / 60)).padStart(2, '0');
-                const secs = String(sessionSecondsRemaining % 60).padStart(2, '0');
-                document.getElementById('session-timer').textContent = `LOCK IN: ${mins}:${secs}`;
-                if (sessionSecondsRemaining <= 0) terminateSession();
-            }, 1000);
-        }
-
-        function terminateSession() {
-            sessionStorage.removeItem('afk_authenticated');
-            window.location.reload();
-        }
-
-        if (sessionStorage.getItem('afk_authenticated') === 'true') grantAccess();
-
-        /* -------------------------------------------------------------
-           2. SUPABASE INITIALIZATION & CACHE
-        ------------------------------------------------------------- */
-        const SUPABASE_URL = 'https://xtzbbqdlidefzsfiixwm.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emJicWRsaWRlZnpzZmlpeHdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczNjMzMjIsImV4cCI6MjEwMjkzOTMyMn0.jONPEEgyCYsv6lapUgVgeixHyWLYtfadveQZJUPm26Y';
-        const sbClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
-        let catalogCache = [];
-        let selectedIds = new Set();
-        let currentEditId = null;
-
-        async function fetchFullDatabase() {
-            if (!sbClient) return alert("Supabase is not configured.");
-            const { data, error } = await sbClient.from('games').select('*').order('created_at', { ascending: false });
-            if (error) {
-                logAudit(`Database fetch failed: ${error.message}`);
-                return;
-            }
-            catalogCache = data || [];
-            updateMetrics();
-            renderFilteredCatalog();
-            logAudit(`Database synced: ${catalogCache.length} records active.`);
-        }
-
-        function updateMetrics() {
-            const total = catalogCache.length;
-            const live = catalogCache.filter(g => (g.status || 'live') === 'live').length;
-            const takedowns = total - live;
-
-            let totalBytes = 0;
-            catalogCache.forEach(g => { if (g.html_code) totalBytes += new Blob([g.html_code]).size; });
-            const kbSize = (totalBytes / 1024).toFixed(1);
-
-            document.getElementById('m-total').textContent = total;
-            document.getElementById('m-live').textContent = live;
-            document.getElementById('m-live-percent').textContent = total ? `${Math.round((live / total) * 100)}% active` : '0%';
-            document.getElementById('m-takedowns').textContent = takedowns;
-            document.getElementById('m-size').textContent = `${kbSize} KB`;
-        }
-
-        /* -------------------------------------------------------------
-           3. DYNAMIC FILTERING & CATALOG TABLE RENDERING
-        ------------------------------------------------------------- */
-        function renderFilteredCatalog() {
-            const tbody = document.getElementById('catalog-tbody');
-            const search = document.getElementById('catalog-search').value.toLowerCase();
-            const statusFilter = document.getElementById('status-filter').value;
-            const sortFilter = document.getElementById('sort-filter').value;
-
-            let list = [...catalogCache];
-
-            if (search) {
-                list = list.filter(g => 
-                    (g.title || '').toLowerCase().includes(search) ||
-                    (g.author || '').toLowerCase().includes(search) ||
-                    (g.email || '').toLowerCase().includes(search) ||
-                    String(g.id).toLowerCase().includes(search)
-                );
-            }
-
-            if (statusFilter !== 'all') {
-                list = list.filter(g => (g.status || 'live') === statusFilter);
-            }
-
-            if (sortFilter === 'newest') list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-            else if (sortFilter === 'oldest') list.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
-            else if (sortFilter === 'alpha') list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-            else if (sortFilter === 'size') list.sort((a, b) => (b.html_code?.length || 0) - (a.html_code?.length || 0));
-
-            if (!list.length) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 36px; color: var(--text-tertiary);">No records found.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = '';
-            list.forEach(game => {
-                const tr = document.createElement('tr');
-                const isLive = (game.status || 'live') === 'live';
-                const sizeKb = (new Blob([game.html_code || '']).size / 1024).toFixed(1);
-                const dateStr = game.created_at ? new Date(game.created_at).toLocaleDateString() : 'N/A';
-                const isChecked = selectedIds.has(String(game.id));
-
-                tr.innerHTML = `
-                    <td><input type="checkbox" onchange="toggleSelect('${game.id}', this)" ${isChecked ? 'checked' : ''}></td>
-                    <td>
-                        <div style="font-weight: 600; color: var(--text-primary);">${escapeHtml(game.title)}</div>
-                        <div style="font-size: 10px; color: var(--text-tertiary); font-family: var(--font-code);">${String(game.id).substring(0, 8)}...</div>
-                    </td>
-                    <td>
-                        <div>${escapeHtml(game.author)}</div>
-                        <div style="font-size: 11px; color: var(--text-tertiary);">${escapeHtml(game.email || 'None')}</div>
-                    </td>
-                    <td style="font-family: var(--font-code); font-size: 11px;">${sizeKb} KB</td>
-                    <td>
-                        <span class="badge-status ${isLive ? 'badge-live' : 'badge-takedown'}">
-                            ${isLive ? '● Live' : '■ Takedown'}
-                        </span>
-                    </td>
-                    <td style="font-size: 11.5px; color: var(--text-tertiary);">${dateStr}</td>
-                    <td style="text-align: right;">
-                        <div class="action-cluster" style="justify-content: flex-end;">
-                            <button class="btn btn-sm" onclick="openSandbox('${game.id}')">Test</button>
-                            <button class="btn btn-sm" onclick="openEditorModal('${game.id}')">Edit</button>
-                            ${isLive 
-                                ? `<button class="btn btn-sm btn-danger" onclick="toggleStatus('${game.id}', 'takedown')">Takedown</button>`
-                                : `<button class="btn btn-sm" style="color: var(--success);" onclick="toggleStatus('${game.id}', 'live')">Restore</button>`
-                            }
-                            <button class="btn btn-sm btn-danger" onclick="deleteSingleGame('${game.id}')" title="Delete record">✕</button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        /* -------------------------------------------------------------
-           4. SELECTION & BATCH OPERATIONS
-        ------------------------------------------------------------- */
-        function toggleSelect(id, cb) {
-            if (cb.checked) selectedIds.add(String(id));
-            else selectedIds.delete(String(id));
-            updateBulkBar();
-        }
-
-        function toggleSelectAll(cb) {
-            selectedIds.clear();
-            if (cb.checked) catalogCache.forEach(g => selectedIds.add(String(g.id)));
-            renderFilteredCatalog();
-            updateBulkBar();
-        }
-
-        function updateBulkBar() {
-            const bar = document.getElementById('bulk-bar');
-            const count = document.getElementById('bulk-count');
-            if (selectedIds.size > 0) {
-                bar.style.display = 'flex';
-                count.textContent = `${selectedIds.size} item(s) selected`;
-            } else {
-                bar.style.display = 'none';
-            }
-        }
-
-        async function bulkSetStatus(status) {
-            if (!confirm(`Apply status "${status.toUpperCase()}" to ${selectedIds.size} items?`)) return;
-            const ids = Array.from(selectedIds);
-            const { error } = await sbClient.from('games').update({ status }).in('id', ids);
-            if (error) alert(error.message);
-            else {
-                logAudit(`Bulk status changed to [${status}] on ${ids.length} records.`);
-                selectedIds.clear();
-                updateBulkBar();
-                fetchFullDatabase();
-            }
-        }
-
-        async function bulkDeleteSelected() {
-            if (!confirm(`Permanently DELETE ${selectedIds.size} games? This cannot be undone.`)) return;
-            const ids = Array.from(selectedIds);
-            const { error } = await sbClient.from('games').delete().in('id', ids);
-            if (error) alert(error.message);
-            else {
-                logAudit(`Bulk deletion on ${ids.length} records.`);
-                selectedIds.clear();
-                updateBulkBar();
-                fetchFullDatabase();
-            }
-        }
-
-        function bulkExportSelected() {
-            const items = catalogCache.filter(g => selectedIds.has(String(g.id)));
-            downloadJSON(items, `imafk_bulk_export_${Date.now()}.json`);
-            logAudit(`Exported ${items.length} records to JSON.`);
-        }
-
-        /* -------------------------------------------------------------
-           5. CODE INSPECTOR & EDITOR MODAL
-        ------------------------------------------------------------- */
-        function openEditorModal(id) {
-            currentEditId = id;
-            const game = catalogCache.find(g => String(g.id) === String(id));
-            if (!game) return;
-
-            document.getElementById('editor-modal-title').textContent = `Editing: ${game.title}`;
-            document.getElementById('editor-modal-meta').textContent = `UUID: ${game.id}`;
-            document.getElementById('edit-title').value = game.title || '';
-            document.getElementById('edit-author').value = game.author || '';
-            document.getElementById('edit-email').value = game.email || '';
-            document.getElementById('edit-status').value = game.status || 'live';
-            
-            const codeArea = document.getElementById('edit-code');
-            codeArea.value = game.html_code || '';
-            document.getElementById('editor-stats').textContent = `${(game.html_code || '').length.toLocaleString()} characters`;
-
-            codeArea.oninput = () => {
-                document.getElementById('editor-stats').textContent = `${codeArea.value.length.toLocaleString()} characters`;
-            };
-
-            const modal = document.getElementById('editor-modal');
-            modal.classList.add('active');
-            document.body.style.overflow = "hidden";
-        }
-
-        function closeEditorModal() {
-            const modal = document.getElementById('editor-modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = "";
-        }
-
-        async function saveEditedGame() {
-            if (!currentEditId) return;
-            const updated = {
-                title: document.getElementById('edit-title').value.trim(),
-                author: document.getElementById('edit-author').value.trim(),
-                email: document.getElementById('edit-email').value.trim(),
-                status: document.getElementById('edit-status').value,
-                html_code: document.getElementById('edit-code').value
-            };
-
-            const { error } = await sbClient.from('games').update(updated).eq('id', currentEditId);
-            if (error) alert("Save failed: " + error.message);
-            else {
-                logAudit(`Patched record "${updated.title}" (${currentEditId}).`);
-                closeEditorModal();
-                fetchFullDatabase();
-            }
-        }
-
-        function testEditedCodeInSandbox() {
-            const code = document.getElementById('edit-code').value;
-            const title = document.getElementById('edit-title').value;
-            openSandboxRaw(title, code);
-        }
-
-        /* -------------------------------------------------------------
-           6. MULTI-DEVICE SANDBOX MODAL
-        ------------------------------------------------------------- */
-        let activeSandboxCode = '';
-
-        function openSandbox(id) {
-            const game = catalogCache.find(g => String(g.id) === String(id));
-            if (!game) return;
-            openSandboxRaw(game.title, game.html_code);
-        }
-
-        function openSandboxRaw(title, code) {
-            activeSandboxCode = code || '';
-            document.getElementById('sandbox-title').textContent = `Sandbox: ${title}`;
-            const frame = document.getElementById('sandbox-frame');
-            frame.srcdoc = activeSandboxCode;
-            const modal = document.getElementById('sandbox-modal');
-            modal.classList.add('active');
-            document.body.style.overflow = "hidden";
-        }
-
-        function closeSandboxModal() {
-            const modal = document.getElementById('sandbox-modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = "";
-            document.getElementById('sandbox-frame').srcdoc = '';
-        }
-
-        function reloadSandboxFrame() {
-            const frame = document.getElementById('sandbox-frame');
-            frame.srcdoc = '';
-            setTimeout(() => { frame.srcdoc = activeSandboxCode; }, 60);
-        }
-
-        function setSandboxViewport(width, btn) {
-            document.getElementById('sandbox-viewport-box').style.width = width;
-        }
-
-        /* -------------------------------------------------------------
-           7. STATIC CODE SAFETY SCANNER
-        ------------------------------------------------------------- */
-        function runGlobalSecurityAudit() {
-            const resultsBox = document.getElementById('scanner-results');
-            resultsBox.innerHTML = '';
-
-            const suspiciousPatterns = [
-                { pattern: /coinhive|cryptonight|miner\.min\.js/i, label: '🚨 Potential Crypto Miner Script' },
-                { pattern: /document\.cookie/i, label: '⚠️ Accesses Document Cookies' },
-                { pattern: /localStorage\.(clear|setItem)/i, label: 'ℹ️ Modifies LocalStorage' },
-                { pattern: /eval\(/i, label: '⚠️ Uses Dynamic eval()' },
-                { pattern: /window\.parent\.location/i, label: '🚨 Frame escape attempt' },
-                { pattern: /fetch\(|XMLHttpRequest/i, label: '🌐 External Network Requests' }
-            ];
-
-            let flaggedCount = 0;
-
-            catalogCache.forEach(game => {
-                const code = game.html_code || '';
-                const detected = [];
-
-                suspiciousPatterns.forEach(p => {
-                    if (p.pattern.test(code)) detected.push(p.label);
-                });
-
-                const row = document.createElement('div');
-                row.className = 'island';
-                row.style.borderRadius = 'var(--radius-sm)';
-                row.style.padding = '14px 18px';
-                row.style.display = 'flex';
-                row.style.justifyContent = 'space-between';
-                row.style.alignItems = 'center';
-
-                if (detected.length > 0) {
-                    flaggedCount++;
-                    row.style.borderColor = 'rgba(224, 108, 117, 0.4)';
-                    row.innerHTML = `
-                        <div>
-                            <div style="font-weight: 600; color: var(--danger);">${escapeHtml(game.title)} (${detected.length} notices)</div>
-                            <div style="font-size: 11.5px; color: var(--text-tertiary); margin-top: 3px;">${detected.join(' &bull; ')}</div>
-                        </div>
-                        <button class="btn btn-sm btn-danger" onclick="openEditorModal('${game.id}')">Inspect</button>
-                    `;
-                } else {
-                    row.innerHTML = `
-                        <div>
-                            <div style="font-weight: 600; color: var(--success);">${escapeHtml(game.title)} ✓ Clear</div>
-                            <div style="font-size: 11.5px; color: var(--text-dim); margin-top: 3px;">No security signatures detected.</div>
-                        </div>
-                        <span style="font-size: 11px; color: var(--success); font-family: var(--font-code); font-weight: 600;">PASSED</span>
-                    `;
-                }
-                resultsBox.appendChild(row);
-            });
-
-            logAudit(`Security scan completed: ${flaggedCount} flagged items.`);
-        }
-
-        /* -------------------------------------------------------------
-           8. DIRECT ADMIN DEPLOY
-        ------------------------------------------------------------- */
-        async function handleAdminDeploy() {
-            const newGame = {
-                title: document.getElementById('deploy-title').value.trim(),
-                author: document.getElementById('deploy-author').value.trim(),
-                email: document.getElementById('deploy-email').value.trim() || 'root@imafk.net',
-                html_code: document.getElementById('deploy-code').value,
-                status: 'live'
-            };
-
-            const { error } = await sbClient.from('games').insert([newGame]);
-            if (error) alert("Deploy failed: " + error.message);
-            else {
-                alert("Game deployed successfully to database!");
-                logAudit(`Directly deployed game "${newGame.title}".`);
-                document.getElementById('deploy-title').value = '';
-                document.getElementById('deploy-author').value = '';
-                document.getElementById('deploy-code').value = '';
-                switchTab('catalog', document.querySelector('.tab-btn'));
-                fetchFullDatabase();
-            }
-        }
-
-        /* -------------------------------------------------------------
-           9. BACKUP & RESTORE JSON
-        ------------------------------------------------------------- */
-        function exportFullDatabaseJSON() {
-            downloadJSON(catalogCache, `imafk_full_backup_${Date.now()}.json`);
-            logAudit("Downloaded full catalog JSON snapshot.");
-        }
-
-        function handleJSONImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (!Array.isArray(parsed)) throw new Error("JSON must be an array of game objects.");
-                    if (!confirm(`Import ${parsed.length} games into Supabase?`)) return;
-
-                    const formatted = parsed.map(g => ({
-                        title: g.title,
-                        author: g.author || 'Imported',
-                        email: g.email || 'backup@imafk.net',
-                        html_code: g.html_code || '',
-                        status: g.status || 'live'
-                    }));
-
-                    const { error } = await sbClient.from('games').insert(formatted);
-                    if (error) alert(error.message);
-                    else {
-                        alert(`Successfully imported ${formatted.length} entries!`);
-                        logAudit(`Restored ${formatted.length} games from JSON.`);
-                        fetchFullDatabase();
-                    }
-                } catch(err) {
-                    alert("Import failed: " + err.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function downloadJSON(obj, filename) {
-            const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-        }
-
-        /* -------------------------------------------------------------
-           10. CLI TERMINAL
-        ------------------------------------------------------------- */
-        function openTerminalModal() { 
-            const modal = document.getElementById('terminal-modal');
-            modal.classList.add('active'); 
-            document.body.style.overflow = "hidden";
-            setTimeout(() => document.getElementById('terminal-input').focus(), 100);
-        }
-        function closeTerminalModal() { 
-            const modal = document.getElementById('terminal-modal');
-            modal.classList.remove('active'); 
-            document.body.style.overflow = "";
-        }
-
-        function handleTerminalCommand(e) {
-            if (e.key !== 'Enter') return;
-            const input = document.getElementById('terminal-input');
-            const output = document.getElementById('terminal-output');
-            const raw = input.value.trim();
-            input.value = '';
-            if (!raw) return;
-
-            output.innerHTML += `<div><span style="color: var(--accent-brand);">root@imafk:~#</span> ${escapeHtml(raw)}</div>`;
-            const parts = raw.split(' ');
-            const cmd = parts[0].toLowerCase();
-            const arg = parts[1];
-
-            switch(cmd) {
-                case 'help':
-                    output.innerHTML += `<div style="color: var(--text-tertiary);">Commands: list, stats, scan, takedown &lt;id&gt;, restore &lt;id&gt;, clear, lock</div>`;
-                    break;
-                case 'stats':
-                    output.innerHTML += `<div>Total: ${catalogCache.length} | Live: ${catalogCache.filter(g => g.status === 'live').length}</div>`;
-                    break;
-                case 'list':
-                    catalogCache.forEach(g => {
-                        output.innerHTML += `<div>[${g.status || 'live'}] ${String(g.id).substring(0,8)} - ${escapeHtml(g.title)}</div>`;
-                    });
-                    break;
-                case 'clear':
-                    output.innerHTML = '';
-                    break;
-                case 'scan':
-                    runGlobalSecurityAudit();
-                    output.innerHTML += `<div style="color: var(--success);">Global scan completed.</div>`;
-                    break;
-                case 'takedown':
-                    if (arg) toggleStatus(arg, 'takedown');
-                    else output.innerHTML += `<div style="color: var(--danger);">Usage: takedown &lt;id&gt;</div>`;
-                    break;
-                case 'restore':
-                    if (arg) toggleStatus(arg, 'live');
-                    else output.innerHTML += `<div style="color: var(--danger);">Usage: restore &lt;id&gt;</div>`;
-                    break;
-                case 'lock':
-                    terminateSession();
-                    break;
-                default:
-                    output.innerHTML += `<div style="color: var(--danger);">Unknown command: ${cmd}. Type "help".</div>`;
-            }
-            output.scrollTop = output.scrollHeight;
-        }
-
-        /* -------------------------------------------------------------
-           11. HELPERS, THEMES & TAB CONTROLLER
-        ------------------------------------------------------------- */
-        function switchTab(name, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            document.getElementById(`tab-${name}`).classList.add('active');
-        }
-
-        async function toggleStatus(id, status) {
-            const { error } = await sbClient.from('games').update({ status }).eq('id', id);
-            if (!error) {
-                logAudit(`Updated status of [${id}] to ${status.toUpperCase()}.`);
-                fetchFullDatabase();
-            }
-        }
-
-        async function deleteSingleGame(id) {
-            if (confirm("Permanently delete this game record?")) {
-                const { error } = await sbClient.from('games').delete().eq('id', id);
-                if (!error) {
-                    logAudit(`Deleted game record [${id}].`);
-                    fetchFullDatabase();
-                }
-            }
-        }
-
-        function logAudit(msg) {
-            const list = document.getElementById('audit-log-container');
-            const time = new Date().toLocaleTimeString();
-            const li = document.createElement('li');
-            li.className = 'audit-item';
-            li.innerHTML = `<span>[${time}]</span><span>${escapeHtml(msg)}</span>`;
-            list.prepend(li);
-        }
-
-        function clearAuditLogs() {
-            document.getElementById('audit-log-container').innerHTML = '';
-        }
-
-        const themeIcon = document.getElementById("theme-icon");
-
-        function updateThemeIcon(theme) {
-            if (!themeIcon) return;
-            if (theme === 'dark') {
-                themeIcon.innerHTML = `
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                `;
-            } else {
-                themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
-            }
-        }
-
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme') || 'dark';
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('afk_theme', next);
-            updateThemeIcon(next);
-        }
-
-        const savedTheme = localStorage.getItem('afk_theme') || 
-            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        updateThemeIcon(savedTheme);
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            const d = document.createElement('div');
-            d.textContent = str;
-            return d.innerHTML;
-        }
-
-        // Global Escape Listener for Admin Modals
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeEditorModal();
-                closeSandboxModal();
-                closeTerminalModal();
-            }
-        });
-    </script>
+  </div>
+
+  <!-- BACKUP -->
+  <div id="tab-backup" class="tab-content">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px;">
+      <div class="panel">
+        <h3>Export catalog snapshot</h3>
+        <p class="desc">Download a full JSON backup of every game and its metadata.</p>
+        <button class="btn btn-primary" id="export-backup-btn">Download .json backup</button>
+      </div>
+      <div class="panel">
+        <h3>Restore from backup</h3>
+        <p class="desc">Import a previously exported JSON backup. Records are inserted as new rows.</p>
+        <input type="file" id="import-json-file" accept=".json" class="hidden">
+        <button class="btn" id="import-backup-btn">Select JSON backup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUDIT -->
+  <div id="tab-audit" class="tab-content">
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="margin:0;">Session operations log</h3>
+        <button class="btn btn-sm btn-danger" id="clear-audit-btn">Clear</button>
+      </div>
+      <ul class="audit-list" id="audit-log-container"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR MODAL -->
+<div class="admin-modal" id="editor-modal">
+  <div class="modal-window">
+    <div class="modal-header">
+      <div><h3 id="editor-modal-title">Edit game</h3><span class="modal-meta" id="editor-modal-meta">ID: —</span></div>
+      <button class="btn btn-sm btn-icon" id="close-editor-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div><span class="field-label">Title</span><input type="text" id="edit-title" class="admin-input" style="width:100%;"></div>
+        <div><span class="field-label">Author credit</span><input type="text" id="edit-author" class="admin-input" style="width:100%;"></div>
+        <div><span class="field-label">Contact email</span><input type="email" id="edit-email" class="admin-input" style="width:100%;"></div>
+        <div><span class="field-label">Status</span><select id="edit-status" class="admin-select" style="width:100%;"><option value="live">Live</option><option value="takedown">Takedown / quarantined</option></select></div>
+      </div>
+      <span class="field-label">Standalone HTML code</span>
+      <div class="cm-host-box" id="edit-cm-host"></div>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-meta" id="editor-stats">0 chars</span>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-sm" id="test-edit-btn">Test run</button>
+        <button class="btn btn-sm btn-primary" id="save-edit-btn">Save &amp; patch DB</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SANDBOX MODAL -->
+<div class="admin-modal" id="sandbox-modal">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3 id="sandbox-title">Sandbox preview</h3>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button class="btn btn-sm" data-vp="100%">Full</button>
+        <button class="btn btn-sm" data-vp="768px">Tablet</button>
+        <button class="btn btn-sm" data-vp="390px">Mobile</button>
+        <button class="btn btn-sm" id="sandbox-reload-btn">↻</button>
+        <button class="btn btn-sm btn-icon" id="close-sandbox-btn">✕</button>
+      </div>
+    </div>
+    <div class="modal-body sandbox-stage">
+      <div class="sandbox-viewport" id="sandbox-viewport-box"><iframe id="sandbox-frame" sandbox="allow-scripts allow-forms allow-pointer-lock allow-modals" allow="fullscreen; autoplay; gamepad"></iframe></div>
+    </div>
+  </div>
+</div>
+
+<!-- TERMINAL MODAL -->
+<div class="admin-modal" id="terminal-modal">
+  <div class="modal-window" style="max-width:640px;">
+    <div class="modal-header"><span style="font-family:var(--font-mono); font-weight:700; font-size:12.5px;">Admin terminal</span><button class="btn btn-sm btn-icon" id="close-terminal-btn">✕</button></div>
+    <div class="modal-body">
+      <div class="terminal-box">
+        <div class="terminal-output" id="terminal-output">Type "help" for commands.<br></div>
+        <div class="terminal-input-line"><span class="terminal-prompt">admin ❯</span><input type="text" id="terminal-input" class="terminal-input" autocomplete="off"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="admin-modal" id="confirm-modal">
+  <div class="modal-window confirm-box">
+    <div class="modal-header"><h3 id="confirm-title">Are you sure?</h3></div>
+    <div class="confirm-body" id="confirm-body"></div>
+    <div class="modal-footer" style="justify-content:flex-end;">
+      <button class="btn btn-sm" id="confirm-cancel-btn">Cancel</button>
+      <button class="btn btn-sm btn-danger" id="confirm-ok-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+
+<script>
+(function(){
+"use strict";
+
+/* ==========================================================================
+   CONFIG
+   ========================================================================== */
+const SUPABASE_URL = 'https://xtzbbqdlidefzsfiixwm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0emJicWRsaWRlZnpzZmlpeHdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczNjMzMjIsImV4cCI6MjEwMjkzOTMyMn0.jONPEEgyCYsv6lapUgVgeixHyWLYtfadveQZJUPm26Y';
+const AUDIT_KEY = 'afk_admin_audit_v1';
+const MAX_AUDIT = 200;
+const IDLE_LOCK_SECONDS = 900;
+const LARGE_CODE_WARN_BYTES = 400 * 1024;
+
+/* ==========================================================================
+   UTILS
+   ========================================================================== */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function debounce(fn, ms){ let t; return function(...a){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,a), ms); }; }
+function fmtKB(bytes){ return (bytes/1024).toFixed(1) + ' KB'; }
+function byteSize(str){ try{ return new Blob([str||'']).size; } catch(e){ return (str||'').length; } }
+function safeGet(key, fallback){ try{ const r = localStorage.getItem(key); return r==null?fallback:JSON.parse(r); }catch(e){ return fallback; } }
+function safeSet(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); return true; }catch(e){ return false; } }
+
+/* ==========================================================================
+   NOTIFICATIONS
+   ========================================================================== */
+const toastContainer = document.getElementById('toast-container');
+function notify(type, msg){
+  try{
+    const el = document.createElement('div');
+    el.className = 'toast ' + (type||'info');
+    el.innerHTML = '<span class="toast-msg"></span><span class="toast-close">✕</span>';
+    el.querySelector('.toast-msg').textContent = msg;
+    toastContainer.appendChild(el);
+    let timer; const life = type==='error' ? 6000 : 3200;
+    const start = () => timer = setTimeout(()=>el.remove(), life);
+    el.addEventListener('mouseenter', ()=>clearTimeout(timer));
+    el.addEventListener('mouseleave', start);
+    el.querySelector('.toast-close').addEventListener('click', ()=>el.remove());
+    start();
+  }catch(e){}
+}
+
+/* ==========================================================================
+   CONFIRM MODAL (replaces native confirm() for a consistent, non-blocking feel)
+   ========================================================================== */
+function showConfirm(title, body, danger){
+  return new Promise(resolve => {
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-body').textContent = body;
+    const okBtn = document.getElementById('confirm-ok-btn');
+    okBtn.className = 'btn btn-sm ' + (danger === false ? 'btn-primary' : 'btn-danger');
+    const modal = document.getElementById('confirm-modal');
+    modal.classList.add('active');
+    function cleanup(result){ modal.classList.remove('active'); okBtn.removeEventListener('click', onOk); cancelBtn.removeEventListener('click', onCancel); resolve(result); }
+    function onOk(){ cleanup(true); }
+    function onCancel(){ cleanup(false); }
+    const cancelBtn = document.getElementById('confirm-cancel-btn');
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+  });
+}
+
+/* ==========================================================================
+   AUDIT LOG (persisted so it survives reloads/lockouts)
+   ========================================================================== */
+let auditLog = safeGet(AUDIT_KEY, []);
+function logAudit(msg){
+  auditLog.unshift({ ts: Date.now(), msg });
+  if (auditLog.length > MAX_AUDIT) auditLog.length = MAX_AUDIT;
+  safeSet(AUDIT_KEY, auditLog);
+  renderAudit();
+}
+function renderAudit(){
+  const list = document.getElementById('audit-log-container');
+  if (!list) return;
+  if (!auditLog.length){ list.innerHTML = '<div style="color:var(--text-faint); padding:20px; text-align:center;">No activity logged yet.</div>'; return; }
+  list.innerHTML = auditLog.map(e => `<li class="audit-item"><span>${new Date(e.ts).toLocaleString()}</span><span>${esc(e.msg)}</span></li>`).join('');
+}
+
+/* ==========================================================================
+   SUPABASE CLIENT — created first, auth and data both go through this
+   ========================================================================== */
+const sbClient = (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+/* ==========================================================================
+   AUTH — real Supabase Auth sign-in. Whoever can authenticate here is
+   whoever has credentials for your one admin account; Supabase's own
+   Attack Protection / Rate Limits (set in your dashboard) cover brute force.
+   The actual access control still lives in your Row Level Security policies
+   on the `games` table — this screen just decides who gets to see the UI.
+   ========================================================================== */
+document.getElementById('auth-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const warn = document.getElementById('warning-text');
+  warn.textContent = '';
+  if (!sbClient){ warn.textContent = 'Supabase failed to load — check your connection and reload.'; return; }
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.querySelector('span').textContent = 'Signing in…';
+  try {
+    const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    grantAccess(data.session.user);
+  } catch(err){
+    warn.textContent = (err.message === 'Invalid login credentials') ? 'Incorrect email or password.' : (err.message || 'Sign-in failed.');
+  } finally {
+    btn.disabled = false; btn.querySelector('span').textContent = 'Sign in';
+  }
+});
+document.getElementById('forgot-password-btn').addEventListener('click', async () => {
+  if (!sbClient){ notify('error', 'Supabase is not configured.'); return; }
+  const email = document.getElementById('login-email').value.trim();
+  if (!email){ notify('warning', 'Type your email above first, then click this again.'); return; }
+  try {
+    const { error } = await sbClient.auth.resetPasswordForEmail(email);
+    if (error) throw error;
+    notify('success', 'Check your inbox for a password reset link.');
+  } catch(e){ notify('error', e.message || 'Could not send a reset email.'); }
+});
+
+let sessionInterval = null, sessionRemaining = IDLE_LOCK_SECONDS;
+function grantAccess(user){
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'block';
+  document.getElementById('brand-sub').textContent = user && user.email ? `Signed in as ${user.email}` : 'Signed in';
+  startIdleTimer();
+  logAudit(`Signed in${user && user.email ? ' as ' + user.email : ''}.`);
+  if (!sbClient) { document.getElementById('config-banner').classList.add('show'); notify('error', 'Supabase failed to initialize.'); return; }
+  fetchFullDatabase();
+}
+function startIdleTimer(){
+  sessionRemaining = IDLE_LOCK_SECONDS;
+  clearInterval(sessionInterval);
+  sessionInterval = setInterval(() => {
+    sessionRemaining--;
+    const pill = document.getElementById('session-pill');
+    const mins = String(Math.floor(sessionRemaining/60)).padStart(2,'0');
+    const secs = String(sessionRemaining%60).padStart(2,'0');
+    pill.textContent = `${mins}:${secs}`;
+    pill.classList.toggle('warn', sessionRemaining <= 60);
+    if (sessionRemaining === 60) notify('warning', 'Signing you out in 1 minute of inactivity — click anywhere to stay signed in.');
+    if (sessionRemaining <= 0) terminateSession();
+  }, 1000);
+}
+function extendIdleTimer(){ if (sessionRemaining > 0 && sessionRemaining < IDLE_LOCK_SECONDS) sessionRemaining = IDLE_LOCK_SECONDS; }
+['click','keydown'].forEach(evt => document.addEventListener(evt, () => { if (document.getElementById('admin-panel').style.display === 'block') extendIdleTimer(); }));
+async function terminateSession(){
+  clearInterval(sessionInterval);
+  if (sbClient) { try { await sbClient.auth.signOut(); } catch(e){} }
+  window.location.reload();
+}
+document.getElementById('lock-btn').addEventListener('click', terminateSession);
+let catalogCache = [];
+let lastFiltered = [];
+let selectedIds = new Set();
+let currentEditId = null;
+let pageIndex = 0;
+let pageSize = 25;
+
+function checkOnline(){ document.getElementById('offline-banner').classList.toggle('show', !navigator.onLine); }
+window.addEventListener('online', checkOnline); window.addEventListener('offline', checkOnline); checkOnline();
+
+async function fetchFullDatabase(){
+  if (!sbClient){ notify('error', 'Supabase is not configured.'); return; }
+  const tbody = document.getElementById('catalog-tbody');
+  try {
+    const { data, error } = await sbClient.from('games').select('*').order('created_at', { ascending:false });
+    if (error) throw error;
+    catalogCache = data || [];
+    updateMetrics();
+    pageIndex = 0;
+    renderFilteredCatalog();
+    logAudit(`Database synced: ${catalogCache.length} record(s).`);
+  } catch(e){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Could not load the catalog — ${esc(e.message || 'network error')}.</td></tr>`;
+    notify('error', 'Sync failed: ' + (e.message || 'network error'));
+  }
+}
+function updateMetrics(){
+  const total = catalogCache.length;
+  const live = catalogCache.filter(g => (g.status||'live')==='live').length;
+  let bytes = 0; catalogCache.forEach(g => { if (g.html_code) bytes += byteSize(g.html_code); });
+  document.getElementById('m-total').textContent = total;
+  document.getElementById('m-live').textContent = live;
+  document.getElementById('m-live-percent').textContent = total ? Math.round((live/total)*100) + '% active' : '—';
+  document.getElementById('m-takedowns').textContent = total - live;
+  document.getElementById('m-size').textContent = fmtKB(bytes);
+}
+
+/* ==========================================================================
+   CATALOG FILTER / SORT / PAGINATE / RENDER
+   ========================================================================== */
+function computeFiltered(){
+  const search = document.getElementById('catalog-search').value.toLowerCase().trim();
+  const includeCode = document.getElementById('search-code-toggle').checked;
+  const statusFilter = document.getElementById('status-filter').value;
+  const sortFilter = document.getElementById('sort-filter').value;
+  let list = catalogCache.slice();
+  if (search){
+    list = list.filter(g =>
+      (g.title||'').toLowerCase().includes(search) ||
+      (g.author||'').toLowerCase().includes(search) ||
+      (g.email||'').toLowerCase().includes(search) ||
+      String(g.id).toLowerCase().includes(search) ||
+      (includeCode && (g.html_code||'').toLowerCase().includes(search))
+    );
+  }
+  if (statusFilter !== 'all') list = list.filter(g => (g.status||'live') === statusFilter);
+  if (sortFilter === 'newest') list.sort((a,b) => new Date(b.created_at||0) - new Date(a.created_at||0));
+  else if (sortFilter === 'oldest') list.sort((a,b) => new Date(a.created_at||0) - new Date(b.created_at||0));
+  else if (sortFilter === 'alpha') list.sort((a,b) => (a.title||'').localeCompare(b.title||''));
+  else if (sortFilter === 'size') list.sort((a,b) => (b.html_code?.length||0) - (a.html_code?.length||0));
+  return list;
+}
+function renderFilteredCatalog(){
+  lastFiltered = computeFiltered();
+  const totalPages = Math.max(1, Math.ceil(lastFiltered.length / pageSize));
+  if (pageIndex >= totalPages) pageIndex = totalPages - 1;
+  if (pageIndex < 0) pageIndex = 0;
+  const start = pageIndex * pageSize;
+  const pageItems = lastFiltered.slice(start, start + pageSize);
+
+  const tbody = document.getElementById('catalog-tbody');
+  if (!pageItems.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No records match.</td></tr>`;
+  } else {
+    tbody.innerHTML = pageItems.map(game => {
+      const isLive = (game.status||'live') === 'live';
+      const sizeKb = fmtKB(byteSize(game.html_code||''));
+      const dateStr = game.created_at ? new Date(game.created_at).toLocaleDateString() : 'N/A';
+      const checked = selectedIds.has(String(game.id));
+      return `<tr>
+        <td><input type="checkbox" class="row-cb" data-id="${esc(game.id)}" ${checked?'checked':''}></td>
+        <td><div class="cell-title">${esc(game.title)}</div><div class="cell-sub">${String(game.id).slice(0,8)}…</div></td>
+        <td><div>${esc(game.author)}</div><div class="cell-sub">${esc(game.email||'none')}</div></td>
+        <td style="font-family:var(--font-mono); font-size:11px;">${sizeKb}</td>
+        <td><span class="badge ${isLive?'badge-live':'badge-takedown'}">${isLive?'● live':'■ takedown'}</span></td>
+        <td style="font-size:11.5px; color:var(--text-faint);">${dateStr}</td>
+        <td><div class="action-cluster">
+          <button class="btn btn-sm" data-sandbox="${esc(game.id)}">Test</button>
+          <button class="btn btn-sm" data-edit="${esc(game.id)}">Edit</button>
+          ${isLive ? `<button class="btn btn-sm btn-danger" data-status="${esc(game.id)}|takedown">Takedown</button>` : `<button class="btn btn-sm btn-success" data-status="${esc(game.id)}|live">Restore</button>`}
+          <button class="btn btn-sm btn-danger" data-del="${esc(game.id)}">✕</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+  document.getElementById('pg-summary').textContent = `${lastFiltered.length} record(s)${lastFiltered.length !== catalogCache.length ? ` (of ${catalogCache.length})` : ''}`;
+  document.getElementById('pg-label').textContent = `${pageIndex+1} / ${totalPages}`;
+  document.getElementById('pg-prev').disabled = pageIndex <= 0;
+  document.getElementById('pg-next').disabled = pageIndex >= totalPages - 1;
+  document.getElementById('select-all-cb').checked = pageItems.length > 0 && pageItems.every(g => selectedIds.has(String(g.id)));
+  updateBulkBar();
+}
+document.getElementById('catalog-tbody').addEventListener('click', e => {
+  const t = e.target;
+  if (t.classList.contains('row-cb')){ toggleSelect(t.dataset.id, t.checked); return; }
+  if (t.dataset.sandbox) openSandbox(t.dataset.sandbox);
+  else if (t.dataset.edit) openEditorModal(t.dataset.edit);
+  else if (t.dataset.del) deleteSingleGame(t.dataset.del);
+  else if (t.dataset.status){ const [id, status] = t.dataset.status.split('|'); toggleStatus(id, status); }
+});
+document.getElementById('catalog-search').addEventListener('input', debounce(() => { pageIndex = 0; renderFilteredCatalog(); }, 200));
+document.getElementById('search-code-toggle').addEventListener('change', () => { pageIndex = 0; renderFilteredCatalog(); });
+document.getElementById('status-filter').addEventListener('change', () => { pageIndex = 0; renderFilteredCatalog(); });
+document.getElementById('sort-filter').addEventListener('change', renderFilteredCatalog);
+document.getElementById('page-size').addEventListener('change', e => { pageSize = parseInt(e.target.value,10); pageIndex = 0; renderFilteredCatalog(); });
+document.getElementById('pg-prev').addEventListener('click', () => { pageIndex--; renderFilteredCatalog(); });
+document.getElementById('pg-next').addEventListener('click', () => { pageIndex++; renderFilteredCatalog(); });
+document.getElementById('sync-btn').addEventListener('click', fetchFullDatabase);
+
+/* ==========================================================================
+   SELECTION & BULK
+   ========================================================================== */
+function toggleSelect(id, on){ if (on) selectedIds.add(String(id)); else selectedIds.delete(String(id)); updateBulkBar(); }
+document.getElementById('select-all-cb').addEventListener('change', e => {
+  if (e.target.checked) lastFiltered.forEach(g => selectedIds.add(String(g.id)));
+  else lastFiltered.forEach(g => selectedIds.delete(String(g.id)));
+  renderFilteredCatalog();
+});
+function updateBulkBar(){
+  const bar = document.getElementById('bulk-bar');
+  if (selectedIds.size > 0){ bar.classList.add('show'); document.getElementById('bulk-count').textContent = `${selectedIds.size} selected`; }
+  else bar.classList.remove('show');
+}
+document.getElementById('bulk-live-btn').addEventListener('click', () => bulkSetStatus('live'));
+document.getElementById('bulk-takedown-btn').addEventListener('click', () => bulkSetStatus('takedown'));
+document.getElementById('bulk-export-btn').addEventListener('click', bulkExportSelected);
+document.getElementById('bulk-delete-btn').addEventListener('click', bulkDeleteSelected);
+
+async function bulkSetStatus(status){
+  const ok = await showConfirm('Change status', `Apply status "${status}" to ${selectedIds.size} item(s)?`, status==='takedown');
+  if (!ok) return;
+  const ids = Array.from(selectedIds);
+  try {
+    const { error } = await sbClient.from('games').update({ status }).in('id', ids);
+    if (error) throw error;
+    logAudit(`Bulk status → ${status} on ${ids.length} record(s).`);
+    notify('success', `Updated ${ids.length} record(s).`);
+    selectedIds.clear();
+    fetchFullDatabase();
+  } catch(e){ notify('error', e.message || 'Bulk update failed.'); }
+}
+async function bulkDeleteSelected(){
+  const ok = await showConfirm('Delete records', `Permanently delete ${selectedIds.size} game(s)? This cannot be undone.`, true);
+  if (!ok) return;
+  const ids = Array.from(selectedIds);
+  try {
+    const { error } = await sbClient.from('games').delete().in('id', ids);
+    if (error) throw error;
+    logAudit(`Bulk deleted ${ids.length} record(s).`);
+    notify('success', `Deleted ${ids.length} record(s).`);
+    selectedIds.clear();
+    fetchFullDatabase();
+  } catch(e){ notify('error', e.message || 'Bulk delete failed.'); }
+}
+function downloadJSON(obj, filename){
+  try {
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+  } catch(e){ notify('error', 'Could not build the download.'); }
+}
+function bulkExportSelected(){
+  const items = catalogCache.filter(g => selectedIds.has(String(g.id)));
+  downloadJSON(items, `imafk_selection_${Date.now()}.json`);
+  logAudit(`Exported ${items.length} selected record(s).`);
+  notify('success', 'Exported selection.');
+}
+document.getElementById('export-filtered-btn').addEventListener('click', () => {
+  downloadJSON(lastFiltered, `imafk_view_${Date.now()}.json`);
+  logAudit(`Exported ${lastFiltered.length} record(s) from current view.`);
+  notify('success', 'Exported current view.');
+});
+
+/* ==========================================================================
+   CODE EDITORS (CodeMirror)
+   ========================================================================== */
+let deployCM = null, editCM = null;
+function makeCM(host){
+  return CodeMirror(host, { value:'', mode:'htmlmixed', theme:'afk', lineNumbers:true, tabSize:2, indentUnit:2,
+    matchBrackets:true, autoCloseBrackets:true, viewportMargin:50, lineWrapping:false });
+}
+function initEditors(){
+  deployCM = makeCM(document.getElementById('deploy-cm-host'));
+  editCM = makeCM(document.getElementById('edit-cm-host'));
+  deployCM.on('changes', () => checkCodeSize(deployCM.getValue(), 'deploy-warning'));
+  editCM.on('changes', () => { document.getElementById('editor-stats').textContent = editCM.getValue().length.toLocaleString() + ' chars'; });
+}
+function checkCodeSize(code, warnId){
+  const el = document.getElementById(warnId);
+  const bytes = byteSize(code);
+  if (bytes > LARGE_CODE_WARN_BYTES){ el.style.display = 'block'; el.textContent = `This file is ${fmtKB(bytes)} — large standalone games can be slow to load in the library. Consider trimming assets.`; }
+  else el.style.display = 'none';
+}
+
+/* ==========================================================================
+   DEPLOY
+   ========================================================================== */
+document.getElementById('deploy-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const title = document.getElementById('deploy-title').value.trim();
+  const author = document.getElementById('deploy-author').value.trim();
+  const email = document.getElementById('deploy-email').value.trim() || 'root@imafk.net';
+  const code = deployCM.getValue();
+  if (!title || !author || !code.trim()){ notify('warning', 'Title, author, and code are required.'); return; }
+  if (!/<html[\s>]/i.test(code) && !/<!doctype html/i.test(code)) notify('warning', "That doesn't look like a full HTML document — deploying anyway, but double-check it.");
+  const btn = document.getElementById('deploy-submit-btn');
+  btn.disabled = true; btn.textContent = 'Deploying…';
+  try {
+    const { error } = await sbClient.from('games').insert([{ title, author, email, html_code: code, status:'live' }]);
+    if (error) throw error;
+    notify('success', 'Deployed to the catalog.');
+    logAudit(`Deployed "${title}" directly.`);
+    document.getElementById('deploy-title').value = '';
+    document.getElementById('deploy-author').value = '';
+    document.getElementById('deploy-email').value = '';
+    deployCM.setValue('');
+    switchTab('catalog');
+    fetchFullDatabase();
+  } catch(err){ notify('error', 'Deploy failed: ' + (err.message||'unknown error')); }
+  finally { btn.disabled = false; btn.textContent = 'Deploy to catalog'; }
+});
+
+/* ==========================================================================
+   EDITOR MODAL
+   ========================================================================== */
+function openEditorModal(id){
+  currentEditId = id;
+  const game = catalogCache.find(g => String(g.id) === String(id));
+  if (!game) return;
+  document.getElementById('editor-modal-title').textContent = 'Editing: ' + game.title;
+  document.getElementById('editor-modal-meta').textContent = 'ID: ' + game.id;
+  document.getElementById('edit-title').value = game.title || '';
+  document.getElementById('edit-author').value = game.author || '';
+  document.getElementById('edit-email').value = game.email || '';
+  document.getElementById('edit-status').value = game.status || 'live';
+  editCM.setValue(game.html_code || '');
+  document.getElementById('editor-stats').textContent = (game.html_code||'').length.toLocaleString() + ' chars';
+  document.getElementById('editor-modal').classList.add('active');
+  setTimeout(() => editCM.refresh(), 50);
+}
+function closeEditorModal(){ document.getElementById('editor-modal').classList.remove('active'); currentEditId = null; }
+document.getElementById('close-editor-btn').addEventListener('click', closeEditorModal);
+document.getElementById('test-edit-btn').addEventListener('click', () => openSandboxRaw(document.getElementById('edit-title').value || 'Untitled', editCM.getValue()));
+document.getElementById('save-edit-btn').addEventListener('click', async () => {
+  if (!currentEditId) return;
+  const updated = {
+    title: document.getElementById('edit-title').value.trim(),
+    author: document.getElementById('edit-author').value.trim(),
+    email: document.getElementById('edit-email').value.trim(),
+    status: document.getElementById('edit-status').value,
+    html_code: editCM.getValue()
+  };
+  const btn = document.getElementById('save-edit-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const { error } = await sbClient.from('games').update(updated).eq('id', currentEditId);
+    if (error) throw error;
+    logAudit(`Patched "${updated.title}" (${currentEditId}).`);
+    notify('success', 'Saved.');
+    closeEditorModal();
+    fetchFullDatabase();
+  } catch(e){ notify('error', 'Save failed: ' + (e.message||'unknown error')); }
+  finally { btn.disabled = false; btn.textContent = 'Save & patch DB'; }
+});
+
+/* ==========================================================================
+   SANDBOX MODAL (with error capture, same bridge pattern as Studio)
+   ========================================================================== */
+let activeSandboxCode = '';
+function bridgedSandboxDoc(code){
+  const bridge = '<script>(function(){' +
+    'function send(level,text){ try{ window.parent.postMessage({type:"AFK_SANDBOX_LOG",level:level,text:text},"*"); }catch(e){} }' +
+    'window.addEventListener("error",function(e){ send("error",(e.message||"Script error")); });' +
+    'window.addEventListener("unhandledrejection",function(e){ send("error","Unhandled rejection: "+(e.reason&&e.reason.message?e.reason.message:e.reason)); });' +
+    '})();<' + '/script>';
+  return code.includes('<head>') ? code.replace('<head>', '<head>' + bridge) : bridge + code;
+}
+window.addEventListener('message', e => { if (e.data && e.data.type === 'AFK_SANDBOX_LOG' && e.data.level === 'error') notify('warning', 'Sandbox error: ' + e.data.text); });
+function openSandbox(id){ const game = catalogCache.find(g => String(g.id)===String(id)); if (game) openSandboxRaw(game.title, game.html_code); }
+function openSandboxRaw(title, code){
+  activeSandboxCode = code || '';
+  document.getElementById('sandbox-title').textContent = 'Sandbox: ' + title;
+  document.getElementById('sandbox-frame').srcdoc = bridgedSandboxDoc(activeSandboxCode);
+  document.getElementById('sandbox-modal').classList.add('active');
+}
+function closeSandboxModal(){ document.getElementById('sandbox-modal').classList.remove('active'); document.getElementById('sandbox-frame').srcdoc = ''; }
+document.getElementById('close-sandbox-btn').addEventListener('click', closeSandboxModal);
+document.getElementById('sandbox-reload-btn').addEventListener('click', () => { const f = document.getElementById('sandbox-frame'); f.srcdoc=''; setTimeout(()=>f.srcdoc = bridgedSandboxDoc(activeSandboxCode), 50); });
+document.querySelectorAll('[data-vp]').forEach(b => b.addEventListener('click', () => { document.getElementById('sandbox-viewport-box').style.width = b.dataset.vp; }));
+
+/* ==========================================================================
+   STATUS / DELETE (row-level)
+   ========================================================================== */
+async function toggleStatus(id, status){
+  try {
+    const { error } = await sbClient.from('games').update({ status }).eq('id', id);
+    if (error) throw error;
+    logAudit(`Status of [${id}] → ${status}.`);
+    notify('success', 'Updated.');
+    fetchFullDatabase();
+  } catch(e){ notify('error', e.message || 'Update failed.'); }
+}
+async function deleteSingleGame(id){
+  const game = catalogCache.find(g => String(g.id)===String(id));
+  const ok = await showConfirm('Delete record', `Permanently delete "${game ? game.title : id}"? This cannot be undone.`, true);
+  if (!ok) return;
+  try {
+    const { error } = await sbClient.from('games').delete().eq('id', id);
+    if (error) throw error;
+    logAudit(`Deleted [${id}]${game ? ' "'+game.title+'"' : ''}.`);
+    notify('success', 'Deleted.');
+    fetchFullDatabase();
+  } catch(e){ notify('error', e.message || 'Delete failed.'); }
+}
+
+/* ==========================================================================
+   SAFETY SCANNER
+   ========================================================================== */
+const SCAN_PATTERNS = [
+  { pattern: /coinhive|cryptonight|miner\.min\.js|webminerpool/i, label: '🚨 potential crypto miner' },
+  { pattern: /document\.cookie/i, label: 'accesses document cookies' },
+  { pattern: /localStorage\.(clear|setItem|removeItem)/i, label: 'writes to localStorage' },
+  { pattern: /\beval\s*\(/i, label: 'uses dynamic eval()' },
+  { pattern: /new\s+Function\s*\(/i, label: 'builds code via new Function()' },
+  { pattern: /window\.(parent|top)\.location/i, label: '🚨 frame escape attempt' },
+  { pattern: /\bfetch\s*\(|XMLHttpRequest|WebSocket\s*\(/i, label: 'makes external network requests' },
+  { pattern: /postMessage\([^)]*,\s*["']\*["']\)/i, label: 'broadcasts postMessage to any origin' },
+  { pattern: /navigator\.sendBeacon/i, label: 'sends a beacon request' },
+  { pattern: /serviceWorker\.register/i, label: 'registers a service worker' }
+];
+document.getElementById('run-scan-btn').addEventListener('click', () => {
+  const box = document.getElementById('scanner-results');
+  box.innerHTML = '';
+  let flagged = 0;
+  catalogCache.forEach(game => {
+    const code = game.html_code || '';
+    const detected = SCAN_PATTERNS.filter(p => p.pattern.test(code)).map(p => p.label);
+    const row = document.createElement('div');
+    row.className = 'scan-row' + (detected.length ? ' flagged' : '');
+    if (detected.length){
+      flagged++;
+      row.innerHTML = `<div><div style="font-weight:700; color:var(--danger);">${esc(game.title)} · ${detected.length} notice(s)</div><div style="font-size:11.5px; color:var(--text-faint); margin-top:3px;">${detected.map(esc).join(' • ')}</div></div><button class="btn btn-sm btn-danger" data-inspect="${esc(game.id)}">Inspect</button>`;
+    } else {
+      row.innerHTML = `<div><div style="font-weight:700; color:var(--success);">${esc(game.title)} ✓ clear</div></div><span style="font-size:10.5px; color:var(--success); font-family:var(--font-mono); font-weight:700;">PASSED</span>`;
+    }
+    box.appendChild(row);
+  });
+  box.querySelectorAll('[data-inspect]').forEach(b => b.addEventListener('click', () => openEditorModal(b.dataset.inspect)));
+  logAudit(`Security scan: ${flagged} flagged of ${catalogCache.length}.`);
+  notify(flagged ? 'warning' : 'success', `Scan complete — ${flagged} flagged.`);
+});
+
+/* ==========================================================================
+   BACKUP / RESTORE
+   ========================================================================== */
+document.getElementById('export-backup-btn').addEventListener('click', () => {
+  downloadJSON(catalogCache, `imafk_full_backup_${Date.now()}.json`);
+  logAudit('Downloaded full catalog backup.');
+  notify('success', 'Backup downloaded.');
+});
+document.getElementById('import-backup-btn').addEventListener('click', () => document.getElementById('import-json-file').click());
+document.getElementById('import-json-file').addEventListener('change', e => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (!Array.isArray(parsed)) throw new Error('Expected a JSON array of game objects.');
+      const formatted = parsed.map(g => ({ title: g.title || 'Untitled', author: g.author || 'Imported', email: g.email || 'backup@imafk.net', html_code: g.html_code || '', status: g.status === 'takedown' ? 'takedown' : 'live' }));
+      const ok = await showConfirm('Restore backup', `Import ${formatted.length} game(s) into the live database as new rows?`, true);
+      if (!ok) return;
+      const { error } = await sbClient.from('games').insert(formatted);
+      if (error) throw error;
+      logAudit(`Restored ${formatted.length} record(s) from a backup file.`);
+      notify('success', `Imported ${formatted.length} record(s).`);
+      fetchFullDatabase();
+    } catch(err){ notify('error', 'Import failed: ' + (err.message||'invalid file')); }
+  };
+  reader.onerror = () => notify('error', 'Could not read that file.');
+  reader.readAsText(file);
+});
+
+/* ==========================================================================
+   TERMINAL
+   ========================================================================== */
+let termHistory = safeGet('afk_admin_term_history', []);
+let termHistIdx = -1;
+function openTerminal(){ document.getElementById('terminal-modal').classList.add('active'); setTimeout(()=>document.getElementById('terminal-input').focus(), 80); }
+function closeTerminal(){ document.getElementById('terminal-modal').classList.remove('active'); }
+document.getElementById('terminal-btn').addEventListener('click', openTerminal);
+document.getElementById('close-terminal-btn').addEventListener('click', closeTerminal);
+document.getElementById('terminal-input').addEventListener('keydown', e => {
+  const out = document.getElementById('terminal-output');
+  if (e.key === 'ArrowUp'){ e.preventDefault(); if (termHistIdx < termHistory.length-1) termHistIdx++; e.target.value = termHistory[termHistIdx] || ''; return; }
+  if (e.key === 'ArrowDown'){ e.preventDefault(); termHistIdx = Math.max(-1, termHistIdx-1); e.target.value = termHistIdx === -1 ? '' : termHistory[termHistIdx]; return; }
+  if (e.key !== 'Enter') return;
+  const raw = e.target.value.trim();
+  e.target.value = '';
+  termHistIdx = -1;
+  if (!raw) return;
+  termHistory.unshift(raw); if (termHistory.length > 50) termHistory.length = 50; safeSet('afk_admin_term_history', termHistory);
+  out.innerHTML += `<div><span style="color:var(--accent);">admin ❯</span> ${esc(raw)}</div>`;
+  runTerminalCommand(raw, out);
+  out.scrollTop = out.scrollHeight;
+});
+function runTerminalCommand(raw, out){
+  const [cmd, ...rest] = raw.split(' ');
+  const arg = rest.join(' ');
+  switch(cmd.toLowerCase()){
+    case 'help': out.innerHTML += `<div style="color:var(--text-faint);">commands: list, stats, scan, find &lt;q&gt;, takedown &lt;id&gt;, restore &lt;id&gt;, export, theme, clear, lock</div>`; break;
+    case 'stats': out.innerHTML += `<div>total ${catalogCache.length} · live ${catalogCache.filter(g=>(g.status||'live')==='live').length}</div>`; break;
+    case 'list': catalogCache.slice(0,40).forEach(g => out.innerHTML += `<div>[${g.status||'live'}] ${String(g.id).slice(0,8)} — ${esc(g.title)}</div>`); break;
+    case 'find':
+      if (!arg){ out.innerHTML += `<div style="color:var(--danger);">usage: find &lt;query&gt;</div>`; break; }
+      const hits = catalogCache.filter(g => (g.title||'').toLowerCase().includes(arg.toLowerCase()));
+      if (!hits.length) out.innerHTML += `<div>no matches.</div>`;
+      else hits.forEach(g => out.innerHTML += `<div>[${g.status||'live'}] ${String(g.id).slice(0,8)} — ${esc(g.title)}</div>`);
+      break;
+    case 'scan': document.getElementById('run-scan-btn').click(); out.innerHTML += `<div style="color:var(--success);">scan started.</div>`; break;
+    case 'takedown': arg ? toggleStatus(arg,'takedown') : out.innerHTML += `<div style="color:var(--danger);">usage: takedown &lt;id&gt;</div>`; break;
+    case 'restore': arg ? toggleStatus(arg,'live') : out.innerHTML += `<div style="color:var(--danger);">usage: restore &lt;id&gt;</div>`; break;
+    case 'export': document.getElementById('export-backup-btn').click(); out.innerHTML += `<div>exporting…</div>`; break;
+    case 'theme': toggleTheme(); out.innerHTML += `<div>theme toggled.</div>`; break;
+    case 'clear': out.innerHTML = ''; break;
+    case 'lock': terminateSession(); break;
+    default: out.innerHTML += `<div style="color:var(--danger);">unknown command: ${esc(cmd)}. type "help".</div>`;
+  }
+}
+
+/* ==========================================================================
+   TABS / THEME / MISC
+   ========================================================================== */
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + name));
+  if (name === 'deploy' && deployCM) setTimeout(() => deployCM.refresh(), 30);
+}
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('afk_theme', next); } catch(e){}
+  if (deployCM) deployCM.refresh(); if (editCM) editCM.refresh();
+}
+document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+(function(){
+  let saved; try { saved = localStorage.getItem('afk_theme'); } catch(e){ saved = null; }
+  const theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+})();
+
+document.getElementById('clear-audit-btn').addEventListener('click', async () => {
+  const ok = await showConfirm('Clear audit log', 'This clears the local operations log. It does not affect the database.', true);
+  if (!ok) return;
+  auditLog = []; safeSet(AUDIT_KEY, auditLog); renderAudit();
+});
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){
+    closeEditorModal(); closeSandboxModal(); closeTerminal();
+    document.getElementById('confirm-modal').classList.remove('active');
+  }
+});
+window.addEventListener('error', e => { try{ notify('error', 'Console hit a snag: ' + e.message); }catch(_){} });
+
+/* ==========================================================================
+   INIT
+   ========================================================================== */
+document.addEventListener('DOMContentLoaded', async () => {
+  initEditors();
+  renderAudit();
+  document.getElementById('page-size').value = String(pageSize);
+  if (!sbClient) { notify('error', 'Supabase failed to load — check your connection and reload.'); return; }
+  // Supabase persists the session itself (localStorage), so a reload or a
+  // new tab stays signed in without re-entering credentials.
+  try {
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (session && session.user) grantAccess(session.user);
+  } catch(e){ /* no session yet — show the sign-in form */ }
+});
+
+})();
+</script>
 </body>
 </html>
