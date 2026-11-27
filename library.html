@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
+<html lang="en" data-theme="dark"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Library — I’M AFK</title>
+    <title>Library</title>
     <link rel="icon" type="image/png" href="icon.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Unbounded:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;family=Unbounded:wght@500;700;800;900&amp;display=swap" rel="stylesheet">
 
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -760,7 +759,7 @@
     <!-- TOP BAR -->
     <header class="topbar">
         <div class="topbar-in">
-            <a href="index.html" class="logo" id="main-brand-logo" title="I’M AFK Hub">
+            <a href="index.html" class="logo" id="main-brand-logo" title="I’M AFK Hub" style="font-family: -apple-system, sans-serif;">
                 <span class="logo-mark" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                 </span>
@@ -768,11 +767,11 @@
             </a>
 
             <ul class="nav" aria-label="Main Navigation">
-                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html" style="font-family: -apple-system, sans-serif;">Home</a></li>
                 <li><a href="library.html" class="active">Library</a></li>
-                <li><a href="studio.html">Studio</a></li>
-                <li><a href="submit.html">Submit</a></li>
-                <li><a href="contact.html">Support</a></li>
+                <li><a href="studio.html" style="font-family: -apple-system, sans-serif;">Studio</a></li>
+                <li><a href="submit.html" style="font-family: -apple-system, sans-serif;">Submit</a></li>
+                <li><a href="contact.html" style="font-family: -apple-system, sans-serif;">Support</a></li>
             </ul>
 
             <div class="bar-actions">
@@ -786,45 +785,45 @@
         </div>
     </header>
 
-    <main>
+    <main style="font-family: -apple-system, sans-serif;">
         <div class="wrap">
 
             <!-- MASTHEAD -->
-            <section class="masthead">
+            <section class="masthead" style="font-family: -apple-system, sans-serif;">
                 <div class="sticker-row" role="status">
                     <span class="sticker"><span class="live-dot" aria-hidden="true"></span><b id="live-players-count">1</b> online</span>
-                    <span class="sticker lime tilt"><b id="total-plays-count">0</b> plays</span>
-                    <span class="sticker tilt2"><b id="game-count">0</b> games</span>
+                    <span class="sticker lime tilt" style="font-family: -apple-system, sans-serif;"><b id="total-plays-count">0</b> plays</span>
+                    <span class="sticker tilt2" style="font-family: -apple-system, sans-serif;"><b id="game-count">0</b> games</span>
                 </div>
 
-                <h1 class="mega"><span class="outline">Game</span><span class="fill">Library</span></h1>
-                <p class="lead">Curated HTML5 creations, ready to run directly in your browser.</p>
+                <h1 class="mega"><span class="fill" style="font-family: -apple-system, sans-serif;">Library</span></h1>
+                
 
-                <div class="ticker" aria-hidden="true">
+                <div class="ticker" aria-hidden="true" style="font-family: -apple-system, sans-serif;">
                     <div class="ticker-track" id="ticker-track">
                         <div class="ticker-set">★ Loading the cabinet ★ Loading the cabinet ★ Loading the cabinet ★ Loading the cabinet ★ </div>
-                        <div class="ticker-set">★ Loading the cabinet ★ Loading the cabinet ★ Loading the cabinet ★ Loading the cabinet ★ </div>
+                        <div class="ticker-set" style="font-family: -apple-system, sans-serif;">★ Loading the cabinet ★ Loading the cabinet ★ Loading the cabinet ★ Loading the cabinet ★ </div>
                     </div>
                 </div>
             </section>
 
             <!-- CONTROLS -->
-            <section class="controls" aria-label="Search and filter">
+            <section class="controls" aria-label="Search and filter" style="font-family: -apple-system, sans-serif; gap: 1px;">
                 <div class="control-row">
-                    <div class="search">
+                    <div class="search" style="font-family: -apple-system, sans-serif; padding-right: 5px; font-size: 10px;">
                         <span class="ico" aria-hidden="true">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         </span>
-                        <input type="text" id="game-search" placeholder="Search titles or creators..." autocomplete="off" aria-label="Search games">
+                        <input type="text" id="game-search" placeholder="Search titles or creators..." autocomplete="off" aria-label="Search games" style="font-family: -apple-system, sans-serif;">
                         <span class="kbd" aria-hidden="true">/</span>
                     </div>
 
                     <div class="seg" id="sort-seg" role="group" aria-label="Sort games">
-                        <button type="button" data-sort="popular" class="on">Most played</button>
+                        <button type="button" data-sort="popular" class="on" style="font-family: -apple-system, sans-serif;">Most played</button>
                         <button type="button" data-sort="alpha">A–Z</button>
                     </div>
 
-                    <button type="button" class="btn btn-hl random-btn" id="random-btn" title="Launch a random game">
+                    <button type="button" class="btn btn-hl random-btn" id="random-btn" title="Launch a random game" style="font-family: -apple-system, sans-serif;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"></rect><circle cx="8.5" cy="8.5" r="1" fill="currentColor"></circle><circle cx="15.5" cy="8.5" r="1" fill="currentColor"></circle><circle cx="12" cy="12" r="1" fill="currentColor"></circle><circle cx="8.5" cy="15.5" r="1" fill="currentColor"></circle><circle cx="15.5" cy="15.5" r="1" fill="currentColor"></circle></svg>
                         <span>Surprise me</span>
                     </button>
@@ -839,21 +838,21 @@
             <!-- GRID -->
             <section class="grid" id="game-container" aria-live="polite">
                 <div class="skel"></div><div class="skel"></div><div class="skel"></div>
-                <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+                <div class="skel"></div><div class="skel"></div><div class="skel" style="font-family: -apple-system, sans-serif;"></div>
             </section>
         </div>
     </main>
 
     <footer>
-        <div class="foot-in">
-            <span>&copy; 2026 I’M AFK • Client-Side Sandbox</span>
+        <div class="foot-in" style="font-family: -apple-system, sans-serif;">
+            <span style="font-family: -apple-system, sans-serif;">© 2026 I’M AFK •</span>
             <div class="foot-links">
-                <a href="index.html">Home</a>
+                <a href="index.html" style="font-family: -apple-system, sans-serif;">Home</a>
                 <a href="library.html">Library</a>
-                <a href="studio.html">Studio</a>
-                <a href="submit.html">Submit</a>
-                <a href="contact.html">Support</a>
-                <a href="tos.html">Terms</a>
+                <a href="studio.html" style="font-family: -apple-system, sans-serif;">Studio</a>
+                <a href="submit.html" style="font-family: -apple-system, sans-serif;">Submit</a>
+                <a href="contact.html" style="font-family: -apple-system, sans-serif;">Support</a>
+                <a href="tos.html" style="font-family: -apple-system, sans-serif;">Terms</a>
             </div>
         </div>
     </footer>
@@ -1540,5 +1539,5 @@
 
         initLibrary();
     </script>
-</body>
-</html>
+
+</body></html>
